@@ -1,58 +1,66 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <h2>¡Hola, deb!</h2>
+    <button @click="changeGreeting">Cambiar Saludo</button>
+    <p>{{ greeting }}</p>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+interface Greeting {
+  text: string;
+}
+
+export default defineComponent({
   name: 'HelloWorld',
   props: {
-    msg: String
+    name: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      greeting: 'Pagina arrechisima lita'
+    }
+  },
+  methods: {
+    changeGreeting(): void {
+      const greetings: Greeting[] = [
+        { text: 'Lito' },
+        { text: 'hOla deb' },
+        { text: ':3' }
+      ];
+      const randomIndex = Math.floor(Math.random() * greetings.length);
+      this.greeting = greetings[randomIndex].text;
+    }
   }
-}
+});
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.hello {
+  margin: 20px;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+button:hover {
+  background-color: #3aa876;
 }
-a {
-  color: #42b983;
+
+p {
+  color: #666;
+  margin-top: 20px;
 }
 </style>
