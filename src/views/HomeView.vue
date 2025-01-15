@@ -1,18 +1,25 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <BaseLayout page-title="Inicio">
+      <DataGridUser /> <!-- Este es el componente hijo que se pasará al slot -->
+    </BaseLayout> <!-- Asegúrate de que este componente esté en el template -->
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import BaseLayout from '@/components/layouts/BaseLayout.vue';
+import DataGridUser from '@/components/utils/user/DataGridUser.vue';
 
 @Options({
   components: {
-    HelloWorld,
+    BaseLayout,
+    DataGridUser, // Asegúrate de registrar el componente aquí
   },
 })
 export default class HomeView extends Vue {}
 </script>
+
+<style scoped>
+
+</style>
