@@ -23,4 +23,3 @@ export default class HomeView extends Vue {}
 <style scoped>
 
 </style>
-hola
