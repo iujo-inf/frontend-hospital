@@ -18,13 +18,21 @@
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="#">
+                    <router-link 
+                        class="nav-link d-flex align-items-center" 
+                        to="/"
+                        exact-active-class="active"
+                    >
                         <img src="/iconos/home.svg" alt="Inicio" width="17" height="17" class="iconColor">
                         <span v-show="isOpen" class="ms-3">Inicio</span>
-                    </a>
+                    </router-link>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('usuarios')">
+                    <a class="nav-link d-flex align-items-center" 
+                       href="#" 
+                       @click.prevent="toggleSubmenu('usuarios')"
+                       :class="{ 'active': isInUsuariosSection }"
+                    >
                         <img src="/iconos/user.svg" alt="Usuarios" width="17" height="17" class="iconColor">
                         <span v-show="isOpen" class="ms-3">Usuario</span>
                         <img v-if="isOpen" 
@@ -36,7 +44,15 @@
                         >
                     </a>
                     <ul class="submenu" v-show="submenuStates.usuarios && isOpen">
-                        <li><a class="nav-link submenu-link" href="#"><span>Pacientes</span></a></li>
+                        <li>
+                            <router-link 
+                                class="nav-link submenu-link" 
+                                to="/usuarios/pacientes"
+                                exact-active-class="active"
+                            >
+                                <span>Pacientes</span>
+                            </router-link>
+                        </li>
                         <li><a class="nav-link submenu-link" href="#"><span>Proveedores</span></a></li>
                         <li><a class="nav-link submenu-link" href="#"><span>Clientes</span></a></li>
                     </ul>
@@ -164,6 +180,34 @@ export default {
             }
         }
     },
+    computed: {
+        isInUsuariosSection() {
+            return this.$route.path.startsWith('/usuarios');
+        }
+    },
+    watch: {
+        // Agregar un watcher para mantener abierto el submenú correspondiente
+        '$route': {
+            immediate: true,
+            handler(newRoute) {
+                if (newRoute.path.startsWith('/usuarios')) {
+                    this.submenuStates.usuarios = true;
+                }
+                if (newRoute.path.startsWith('/citas')) {
+                    this.submenuStates.citas = true;
+                }
+                if (newRoute.path.startsWith('/emergencia')) {
+                    this.submenuStates.emergencia = true;
+                }
+                if (newRoute.path.startsWith('/farmacia')) {
+                    this.submenuStates.farmacia = true;
+                }
+                if (newRoute.path.startsWith('/almacen')) {
+                    this.submenuStates.almacen = true;
+                }
+            }
+        }
+    },
     methods: {
         toggleMenu() {
             this.isOpen = !this.isOpen;
@@ -283,5 +327,28 @@ img {
 /* Nuevo estilo para la flecha del submenú */
 .submenu-icon {
     margin-left: auto;
+}
+
+/* Estilo para la opción activa */
+.nav-link.active {
+    background-color: #e8efff !important;
+    color: #2d60ff !important;
+}
+
+.nav-link.active .iconColor {
+    filter: invert(32%) sepia(95%) saturate(1029%) hue-rotate(211deg) brightness(97%) contrast(108%);
+}
+
+/* Estilo para el submenú activo */
+.submenu .nav-link.active {
+    background-color: #e8efff !important;
+    color: #2d60ff !important;
+    font-weight: 500;
+}
+
+/* Ajuste para el hover cuando está activo */
+.nav-link.active:hover {
+    background-color: #e8efff !important;
+    color: #2d60ff !important;
 }
 </style>
