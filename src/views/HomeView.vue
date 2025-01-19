@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="ListUsers">
     <BaseLayout page-title="Inicio">
       <DataGridUser /> <!-- Este es el componente hijo que se pasará al slot -->
     </BaseLayout> <!-- Asegúrate de que este componente esté en el template -->
@@ -23,3 +23,4 @@ export default class HomeView extends Vue {}
 <style scoped>
 
 </style>
+hola
