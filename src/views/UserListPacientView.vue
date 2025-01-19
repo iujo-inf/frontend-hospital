@@ -1,6 +1,6 @@
 <template>
-  <div class="ListUsers">
-    <BaseLayout page-title="Inicio">
+  <div class="UserList">
+    <BaseLayout page-title="Listado de Usuarios > Pacientes">
       <DataGridUser /> <!-- Este es el componente hijo que se pasará al slot -->
     </BaseLayout> <!-- Asegúrate de que este componente esté en el template -->
   </div>
@@ -17,7 +17,7 @@ import DataGridUser from '@/components/utils/user/DataGridUser.vue';
     DataGridUser, // Asegúrate de registrar el componente aquí
   },
 })
-export default class HomeView extends Vue {}
+export default class UserListView extends Vue {}
 </script>
 
 <style scoped>
