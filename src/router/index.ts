@@ -1,6 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import UserListPacientView from '../views/UserListPacientView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
+import EmergencyListView from '../views/EmergencyListView.vue';
+import FormEmergency from '../views/FormEmergency.vue'; // Importa la vista del formulario
 
 const routes = [
   {
@@ -9,23 +10,22 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/usuarios/pacientes',
-    name: 'pacientes',
-    component: UserListPacientView
+    path: '/emergencias',
+    name: 'emergencias',
+    component: EmergencyListView
   },
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  // }
-]
+  {
+    path: '/agregar-emergencia',
+    name: 'agregar-emergencia',
+    component: FormEmergency // Ruta para el formulario de agregar emergencia
+  }
+  // Puedes agregar más rutas aquí si es necesario
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
-})
+});
 
-export default router
+export default router;
+

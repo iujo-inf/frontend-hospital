@@ -27,6 +27,9 @@
                         <span v-show="isOpen" class="ms-3">Inicio</span>
                     </router-link>
                 </li>
+
+             
+
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center" 
                        href="#" 
@@ -57,6 +60,7 @@
                         <li><a class="nav-link submenu-link" href="#"><span>Clientes</span></a></li>
                     </ul>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('citas')">
                         <img src="/iconos/calendar-clock.svg" alt="Citas" width="17" height="17" class="iconColor">
@@ -74,18 +78,16 @@
                         <li><a class="nav-link submenu-link" href="#"><span>Facturación</span></a></li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('emergencia')">
-                        <img src="/iconos/ambulancia.svg" alt="Emergencia" width="17" height="17" class="iconColor">
-                        <span v-show="isOpen" class="ms-3">Emergencia</span>
-                        <img v-if="isOpen" 
-                            src="/iconos/angulo-derecho.svg" 
-                            :class="{ 'submenu-icon-rotated': submenuStates.emergencia }"
-                            class="submenu-icon ms-auto" 
-                            width="12" 
-                            height="12"
-                        >
-                    </a>
+                
+                   <!-- Aquí añadimos el enlace a la vista de emergencias --> 
+                   <li class="nav-item">
+                     <router-link class="nav-link d-flex align-items-center" 
+                     to="/emergencias" exact-active-class="active" 
+                     > 
+                     <img src="/iconos/ambulancia.svg" alt="Emergencias" width="17" height="17" class="iconColor"> 
+                     <span v-show="isOpen" class="ms-3">Emergencias</span>
+                     </router-link> 
+                   
                     <ul class="submenu" v-show="submenuStates.emergencia && isOpen">
                         <li><a class="nav-link submenu-link" href="#"><span>Listado de Emergencias</span></a></li>
                         <li><a class="nav-link submenu-link" href="#"><span>Facturación</span></a></li>
