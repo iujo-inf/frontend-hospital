@@ -13,11 +13,6 @@ const routes = [
   {
     path: '/usuarios/pacientes',
     name: 'pacientes',
-    component: UserListPacientView
-  },
-  {
-    path: '/usuarios/pacientes/lista',
-    name: 'patientList',
     component: PacientListView
   },
   {
