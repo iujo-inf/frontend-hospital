@@ -1,11 +1,12 @@
 <template>
     <div class="container mt-5">
         <div class="input-group mb-3">
-            <div class="col-md-11"> 
-                <input type="text" class="form-control" placeholder="Buscar por nombre o apellido" v-model="searchQuery" /> 
+            <div class="col-md-11">
+                <input type="text" class="form-control" placeholder="Buscar por nombre o apellido"
+                    v-model="searchQuery" />
             </div>
-            <div class="col-md-1"> 
-                <button class="btn btn-success btn-sm" @click="addPatient">Agregar</button> 
+            <div class="col-md-1">
+                <button class="btn btn-success btn-sm" @click="addPatient">Agregar</button>
             </div>
         </div>
         <table class="table table-hover">
@@ -37,6 +38,8 @@
 </template>
 
 <script>
+import router from '@/router';
+
 export default {
     name: 'DataGridPatient',
     data() {
@@ -69,7 +72,11 @@ export default {
             alert(`Eliminar paciente con ID: ${id}`);
             // Aquí puedes agregar la lógica para eliminar el paciente
         },
+        addPatient() {
+            router.push({ name: 'addPatient' });
+        }
     },
+
 };
 </script>
 
