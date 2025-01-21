@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import UserListPacientView from '../views/UserListPacientView.vue'
+import UserListSupplierView from '../views/UserListSupplierView.vue'
+import FormSupplier from '../components/utils/user/supplier/FormSupplier.vue'
 
 const routes = [
   {
@@ -13,6 +15,17 @@ const routes = [
     name: 'pacientes',
     component: UserListPacientView
   },
+  {
+    path: '/usuarios/proveedores',
+    name: 'proveedores',
+    component: UserListSupplierView
+  },
+  {
+    path: '/editSupplier/:id/:isEditing',
+    name: 'editSupplier',
+    component: FormSupplier,
+    props: (route: any) => ({ id: route.params.id, isEditing: route.params.isEditing })
+  }
   // {
   //   path: '/about',
   //   name: 'about',
