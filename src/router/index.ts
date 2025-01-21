@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import UserListPacientView from '../views/UserListPacientView.vue'
+import BillingEmergenciesListView from '../views/BillingEmergencies/BillingEmergenciesListView.vue'
+
 
 const routes = [
   {
@@ -12,6 +14,11 @@ const routes = [
     path: '/usuarios/pacientes',
     name: 'pacientes',
     component: UserListPacientView
+  },
+  {
+    path: '/emergencia/facturacion',
+    name: 'facturacion',
+    component: BillingEmergenciesListView
   },
   // {
   //   path: '/about',
