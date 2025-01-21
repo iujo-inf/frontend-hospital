@@ -121,7 +121,15 @@
                         >
                     </a>
                     <ul class="submenu" v-show="submenuStates.almacen && isOpen">
-                        <li><a class="nav-link submenu-link" href="#"><span>Productos</span></a></li>
+                     <li>
+                            <router-link 
+                                class="nav-link submenu-link" 
+                                to="/almacen/productos"
+                                exact-active-class="active"
+                            >
+                                <span>Productos</span>
+                            </router-link>
+                        </li>
                         <li><a class="nav-link submenu-link" href="#"><span>Entradas/Salidas</span></a></li>
                     </ul>
                 </li>
