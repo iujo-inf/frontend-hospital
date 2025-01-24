@@ -89,6 +89,29 @@
                     </ul>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('laboratorio')">
+                        <img src="/iconos/tubo-de-analisis-de-sangre-alt.svg" alt="Laboratorio" width="17" height="17" class="iconColor">
+                        <span v-show="isOpen" class="ms-3">Laboratorio</span>
+                        <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                            :class="{ 'submenu-icon-rotated': submenuStates.laboratorio }" class="submenu-icon ms-auto"
+                            width="12" height="12">
+                    </a>
+                    <ul class="submenu" v-show="submenuStates.laboratorio && isOpen">
+                        <li>
+                            <a class="nav-link submenu-link" href="#">
+                                <span>Listado de Laboratorios</span>
+                            </a>
+                        </li>
+                        <li>
+                            <router-link class="nav-link submenu-link" to="/laboratorio/facturacion"
+                                exact-active-class="active">
+                                <span>Facturación</span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('almacen')">
                         <img src="/iconos/plataforma-rodante-alternativa.svg" alt="Almacén" width="17" height="17"
                             class="iconColor">
