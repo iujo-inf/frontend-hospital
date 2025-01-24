@@ -45,8 +45,12 @@
                     </a>
                     <ul class="submenu" v-show="submenuStates.citas && isOpen">
                         <li><a class="nav-link submenu-link" href="#"><span>Programar Citas</span></a></li>
-                        <li><a class="nav-link submenu-link" href="#"><span>Facturación</span></a></li>
-                    </ul>
+                        <li>
+                            <router-link class="nav-link submenu-link" to="/citas/facturacion"
+                                exact-active-class="active">
+                                <span>Facturación</span>
+                            </router-link>
+                        </li>                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('emergencia')">
