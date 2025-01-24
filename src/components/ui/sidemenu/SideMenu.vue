@@ -192,10 +192,14 @@
                 <span>Inventario</span>
               </router-link>
             </li>
-            <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Facturación</span></a
+                <li>
+              <router-link
+                class="nav-link submenu-link"
+                to="/farmacia/facturacion"
+                exact-active-class="active"
               >
+                <span>Facturacion</span>
+              </router-link>
             </li>
           </ul>
         </li>
