@@ -70,7 +70,7 @@
                         >
                     </a>
                     <ul class="submenu" v-show="submenuStates.citas && isOpen">
-                        <li><a class="nav-link submenu-link" href="#"><span>Programar Citas</span></a></li>
+                        <li><a class="nav-link submenu-link" href="/cita"><span>Programar Citas</span></a></li>
                         <li><a class="nav-link submenu-link" href="#"><span>Facturación</span></a></li>
                     </ul>
                 </li>
