@@ -1,6 +1,19 @@
 <template>
+  <body>
+    <div class="left">
+    <h1 class="leftStop">Bienvenido a MediPluss</h1>
+      <div>
+      <a><img src="logohispital.jpg" alt=" "></a>
+    </div>
+    <h4>integra tu gestion hospitalaria 
+      en una sola plataforma</h4>
+  </div>  
   <div class="login-container">
-    <h1>Inicio de Sesión</h1>
+   <div class="logo">
+    <h1><img src="logo.png" ></h1> 
+    </div>
+    
+    <h2>Ingresa Tu Cuenta</h2>
     <form @submit.prevent="handleSubmit">
       <label for="username">Usuario:</label>
       <input type="text" id="username" v-model="username" required>
@@ -12,6 +25,7 @@
     </form>
     <p>¿No tienes cuenta? <router-link to="/register">Regístrate</router-link></p>
   </div>
+</body>
 </template>
 
 <script>
@@ -43,14 +57,76 @@ export default {
 </script>
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-image:url('../homeScreen/logos/medicos.jpg');
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 10px;
 }
-header {
+.left{
+    background-color: blue;
+    padding: 180px;
+    color: #f0f0f0;
+    width: 600px;
+    margin-top: 0%;
+}
+.leftStop{
+  margin-top: 0%;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 110px;
     text-align: center;
+    width: 500px;
 }
-form {
+a{
+  justify-items: center;
+}
+h1{
+  background-image: url('../homeScreen/logos/logo.png');
+}
+
+.logo{
+    justify-content: center;
+    width: 200px;
+}
+
+h2 {
+  font-size: small;
+    margin-bottom: 200px;
+}
+
+label {
+    
+    margin-bottom: 10px;
+    text-align: left;
+    left: 0%;
+    pointer-events: none;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
     border: 1px solid #ccc;
-    padding: 20px;
+    border-radius: 5px;
 }
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+p {
+    text-decoration: none;
+    color: #007bff;
+ }
+
+ 
 </style>
