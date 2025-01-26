@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import UserListPacientView from '../views/UserListPacientView.vue'
-import BuyListView from '../views/buy/BuyListView.vue'
+import SalesListView from '../views/Sales/SaleslistView.vue' // Mantenido
+import BuyListView from '../views/buy/BuyListView.vue' // Mantenido
 
 const routes = [
   {
@@ -15,12 +16,15 @@ const routes = [
     component: UserListPacientView
   },
   {
+    path: '/ventas',
+    name: 'ventas',
+    component: SalesListView // Mantenido
+  },
+  {
     path: '/compras',
     name: 'compras',
-    component: BuyListView
+    component: BuyListView // Mantenido
   },
-
-
   // {
   //   path: '/about',
   //   name: 'about',
