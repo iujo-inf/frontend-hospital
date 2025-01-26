@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/home/HomeView.vue'
 import UserListPacientView from '../views/users/UserListPacientView.vue'
 import UserListSupplierView from '../views/users/UserListSupplierView.vue'
 import PharmacyInventoryView from '../views/pharmacy/PharmacyInventoryView.vue'
