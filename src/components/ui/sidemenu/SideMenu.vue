@@ -75,14 +75,16 @@
               </router-link>
             </li>
             <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Proveedores</span></a
+              <router-link
+                class="nav-link submenu-link"
+                to="/usuarios/proveedores"
+                exact-active-class="active"
               >
+                <span>Proveedores</span>
+              </router-link>
             </li>
             <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Clientes</span></a
-              >
+              <a class="nav-link submenu-link" href="#"><span>Clientes</span></a>
             </li>
           </ul>
         </li>
@@ -192,7 +194,7 @@
                 <span>Inventario</span>
               </router-link>
             </li>
-                <li>
+            <li>
               <router-link
                 class="nav-link submenu-link"
                 to="/farmacia/facturacion"
@@ -203,7 +205,6 @@
             </li>
           </ul>
         </li>
-
         <li class="nav-item">
           <a
             class="nav-link d-flex align-items-center"
@@ -318,12 +319,10 @@ export default {
       currentIcons: {
         home: "/iconos/home.svg",
         user: "/iconos/user.svg",
-        // Agrega los demás íconos aquí
       },
       hoverIcons: {
         home: "/iconos_acolor/home-hover.svg",
         user: "/iconos_acolor/user-hover.svg",
-        // Agrega los demás íconos de hover aquí
       },
     };
   },
@@ -335,9 +334,7 @@ export default {
       return this.$route.path.startsWith("/farmacia");
     },
   },
-
   watch: {
-    // Agregar un watcher para mantener abierto el submenú correspondiente
     $route: {
       immediate: true,
       handler(newRoute) {
@@ -381,7 +378,7 @@ export default {
   top: 0;
   left: 0;
   height: 100vh;
-  width: 240px; /* Ancho del side menu */
+  width: 240px;
   background-color: white;
   box-shadow: none;
   transition: width 0.3s ease;
@@ -390,7 +387,7 @@ export default {
 }
 
 .side-menu-minimized {
-  width: 80px; /* Ancho del side menu minimizado */
+  width: 80px;
 }
 
 .side-menu-minimized .side-menu-content {
@@ -423,12 +420,12 @@ export default {
   transition: transform 0.3s ease;
 }
 .nav-link {
-  transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave */
+  transition: background-color 0.3s ease, color 0.3s ease;
   font-weight: medium;
 }
 .nav-link:hover {
-  background-color: #e0e0e0; /* Cambia el color de fondo al hacer hover */
-  color: #2d60ff; /* Cambia el color del texto al hacer hover */
+  background-color: #e0e0e0;
+  color: #2d60ff;
 }
 
 .nav-link:hover .iconColor {
@@ -476,12 +473,10 @@ img {
   width: 100%;
 }
 
-/* Nuevo estilo para la flecha del submenú */
 .submenu-icon {
   margin-left: auto;
 }
 
-/* Estilo para la opción activa */
 .nav-link.active {
   background-color: #e8efff !important;
   color: #2d60ff !important;
@@ -492,14 +487,12 @@ img {
     brightness(97%) contrast(108%);
 }
 
-/* Estilo para el submenú activo */
 .submenu .nav-link.active {
   background-color: #e8efff !important;
   color: #2d60ff !important;
   font-weight: 500;
 }
 
-/* Ajuste para el hover cuando está activo */
 .nav-link.active:hover {
   background-color: #e8efff !important;
   color: #2d60ff !important;

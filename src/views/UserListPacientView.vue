@@ -17,7 +17,7 @@ import DataGridUser from '@/components/utils/user/DataGridUser.vue';
     DataGridUser, // Asegúrate de registrar el componente aquí
   },
 })
-export default class UserListView extends Vue {}
+export default class UserListPacientView extends Vue {}
 </script>
 
 <style scoped>
