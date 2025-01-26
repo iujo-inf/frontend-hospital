@@ -22,5 +22,37 @@ import DataGridMedicine from "@/components/utils/pharmacy/DataGridMedicine.vue";
 export default class PharmacyInventoryView extends Vue {}
 </script>
 
-<style scoped></style>
+<style scoped>
+/* ... otros estilos ... */
+
+.dropdown-menu {
+  min-width: 160px;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border: 1px solid #f5f9fb;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: #fff5f5;
+}
+
+.btn-link {
+  color: #333;
+}
+
+.btn-link:hover {
+  color: #2d60ff;
+}
+</style>
 

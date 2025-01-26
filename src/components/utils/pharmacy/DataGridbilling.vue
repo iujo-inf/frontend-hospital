@@ -37,7 +37,39 @@
               <button class="btn btn-outline-primary btn-sm">Descargar</button>
             </td>
             <td>
-              <span class="actions-icon">•••</span>
+              <div class="dropdown">
+                <button 
+                  class="btn btn-link p-0"
+                  type="button"
+                  id="actionDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span class="actions-icon">•••</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+                  <li>
+                    <a 
+                      class="dropdown-item" 
+                      href="#" 
+                      @click.prevent="editItem(sale)"
+                    >
+                      <i class="bi bi-pencil me-2"></i>
+                      Editar
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      class="dropdown-item text-danger" 
+                      href="#" 
+                      @click.prevent="deleteItem(sale)"
+                    >
+                      <i class="bi bi-trash me-2"></i>
+                      Eliminar
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -136,6 +168,17 @@ export default {
       });
     },
   },
+  methods: {
+    editItem(item) {
+      console.log('Editando factura:', item.invoiceNumber);
+    },
+    deleteItem(item) {
+      const confirmDelete = confirm(`¿Estás seguro de eliminar la factura N° ${item.invoiceNumber}?`);
+      if (confirmDelete) {
+        this.sales = this.sales.filter(sale => sale.id !== item.id);
+      }
+    }
+  },
 };
 </script>
 
@@ -201,5 +244,44 @@ export default {
 .btn-outline-primary:hover {
   background: #0d6efd;
   color: white;
+}
+
+.dropdown-menu {
+  min-width: 160px;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border: 1px solid #f5f9fb;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: #fff5f5;
+}
+
+.btn-link {
+  padding: 0;
+  border: none;
+}
+
+.btn-link:hover .actions-icon {
+  color: #2d60ff;
+}
+
+.actions-icon {
+  font-size: 20px;
+  color: #6c757d;
+  cursor: pointer;
+  display: inline-block;
+  letter-spacing: 2px;
 }
 </style>

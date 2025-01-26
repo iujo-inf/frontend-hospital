@@ -34,8 +34,39 @@
           <td>{{ med.stock }}</td>
           <td>{{ formatCurrency(med.price) }}</td>
           <td>
-            <button class="btn btn-primary btn-sm" @click="editMedicine(med.id)">Editar</button>
-            <button class="btn btn-danger btn-sm" @click="deleteMedicine(med.id)">Eliminar</button>
+            <div class="dropdown">
+              <button 
+                class="btn btn-link p-0"
+                type="button"
+                id="actionDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span class="actions-icon">•••</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionDropdown">
+                <li>
+                  <a 
+                    class="dropdown-item" 
+                    href="#" 
+                    @click.prevent="editItem(med)"
+                  >
+                    <i class="bi bi-pencil me-2"></i>
+                    Editar
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    class="dropdown-item text-danger" 
+                    href="#" 
+                    @click.prevent="deleteItem(med)"
+                  >
+                    <i class="bi bi-trash me-2"></i>
+                    Eliminar
+                  </a>
+                </li>
+              </ul>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -146,13 +177,13 @@ export default {
     formatCurrency(value) {
       return `$${parseFloat(value).toFixed(2)}`;
     },
-    editMedicine(id) {
-      alert(`Editar medicamento con ID: ${id}`);
+    editItem(item) {
+      alert(`Editar medicamento con ID: ${item.id}`);
     },
-    deleteMedicine(id) {
-      const confirmDelete = confirm(`¿Estás seguro de eliminar el medicamento con ID: ${id}?`);
+    deleteItem(item) {
+      const confirmDelete = confirm(`¿Estás seguro de eliminar el medicamento con ID: ${item.id}?`);
       if (confirmDelete) {
-        this.medicines = this.medicines.filter((med) => med.id !== id);
+        this.medicines = this.medicines.filter((med) => med.id !== item.id);
       }
     },
     saveProduct() {
@@ -273,5 +304,44 @@ export default {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.dropdown-menu {
+  min-width: 160px;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border: 1px solid #f5f9fb;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: #fff5f5;
+}
+
+.btn-link {
+  padding: 0;
+  border: none;
+}
+
+.btn-link:hover .actions-icon {
+  color: #2d60ff;
+}
+
+.actions-icon {
+  font-size: 20px;
+  color: #6c757d;
+  cursor: pointer;
+  display: inline-block;
+  letter-spacing: 2px;  /* Aumentado el espaciado entre puntos */
 }
 </style>
