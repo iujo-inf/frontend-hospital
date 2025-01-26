@@ -53,7 +53,15 @@
                                 <span>Pacientes</span>
                             </router-link>
                         </li>
-                        <li><a class="nav-link submenu-link" href="#"><span>Proveedores</span></a></li>
+                        <li>
+                            <router-link 
+                                class="nav-link submenu-link" 
+                                to="/usuarios/proveedores"
+                                exact-active-class="active"
+                            >
+                                <span>Proveedores</span>
+                            </router-link>
+                        </li>
                         <li><a class="nav-link submenu-link" href="#"><span>Clientes</span></a></li>
                     </ul>
                 </li>
