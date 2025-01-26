@@ -4,7 +4,7 @@
             <div>
                 <a class="navbar-brand ms-5" href="#">{{ title }}</a>
             </div>
-            <div class='d-flex align-items-center gap-2'>
+            <div class='d-flex align-items-center gap-2 me-5'>
                 <div class="search-container">
                     <input
                         class="form-control rounded-pill ps-5"
@@ -19,9 +19,31 @@
                         class="search-icon"
                     >
                 </div>
-                <button class="btn btn-light rounded-circle me-5 d-flex align-items-center justify-content-center">
-                    <img src="/iconos/user.svg" alt="User" width="25" height="25" class="userIcon">
-                </button>
+                <div class="dropdown">
+                    <button 
+                        class="btn btn-link nav-link dropdown-toggle"
+                        type="button"
+                        id="userDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <img
+                            src="/iconos/user.svg"
+                            alt="Usuario"
+                            width="24"
+                            height="24"
+                            class="iconColor"
+                        />
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#" @click.prevent="cerrarSesion">
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Cerrar sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -48,6 +70,13 @@ export default {
     methods: {
         toggleSideMenu() {
             this.$emit('toggle-menu')
+        },
+        cerrarSesion() {
+            // Aquí puedes agregar la lógica para cerrar sesión
+            console.log('Cerrando sesión...');
+            // Por ejemplo:
+            // this.$store.dispatch('logout');
+            // this.$router.push('/login');
         }
     }
 }
@@ -83,5 +112,31 @@ export default {
 }
 .userIcon { 
     filter: invert(48%) sepia(0%) saturate(0%) hue-rotate(147deg) brightness(89%) contrast(93%);
+}
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu {
+    min-width: 200px;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: 1px solid #f5f9fb;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    color: #333;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #2d60ff;
+}
+
+.iconColor {
+    filter: invert(48%) sepia(0%) saturate(0%) hue-rotate(147deg) brightness(89%)
+        contrast(93%);
 }
 </style>
