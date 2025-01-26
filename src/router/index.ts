@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import UserListPacientView from '../views/UserListPacientView.vue'
+import PharmacyInventoryView from '../views/PharmacyInventoryView.vue'
+import BillingView from '../views/BillingView.vue'
 import SalesListView from '../views/Sales/SaleslistView.vue' // Mantenido
 import BuyListView from '../views/buy/BuyListView.vue' // Mantenido
 
@@ -16,6 +18,16 @@ const routes = [
     component: UserListPacientView
   },
   {
+    path: '/farmacia/inventario',
+    name: 'inventario',
+    component: PharmacyInventoryView
+  },
+  {
+    path: '/farmacia/facturacion',
+    name: 'facturacion',
+    component: BillingView
+  },
+
     path: '/ventas',
     name: 'ventas',
     component: SalesListView // Mantenido
@@ -25,6 +37,7 @@ const routes = [
     name: 'compras',
     component: BuyListView // Mantenido
   },
+
   // {
   //   path: '/about',
   //   name: 'about',
