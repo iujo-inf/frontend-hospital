@@ -1,6 +1,6 @@
 <template>
-    <div class="SupplierList">
-        <BaseLayout page-title="Listado de Usuarios > Proveedores">
+    <div class="UserListSupplier">
+        <BaseLayout page-title="Listado de Proveedores">
             <DataGridSupplier />
         </BaseLayout>
     </div>
@@ -17,7 +17,7 @@ import DataGridSupplier from '@/components/utils/user/supplier/DataGridSupplier.
         DataGridSupplier,
     },
 })
-export default class SupplierListView extends Vue { }
+export default class UserListSupplierView extends Vue { }
 </script>
 
 <style scoped></style>
