@@ -126,13 +126,13 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="#">
+                    <router-link class="nav-link d-flex align-items-center" to="/compras">
                         <img src="/iconos/carrito-de-compras.svg" alt="Citas" width="17" height="17" class="iconColor">
                         <span v-show="isOpen" class="ms-3">Compras</span>
-                    </a>
+                    </router-link>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="#">
+                    <a class="nav-link d-flex align-items-center" href="/ventas">
                         <img src="/iconos/factura-punto-de-venta.svg" alt="Citas" width="17" height="17" class="iconColor">
                         <span v-show="isOpen" class="ms-3">Ventas</span>
                     </a>
