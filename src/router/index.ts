@@ -1,10 +1,17 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import UserListPacientView from '../views/UserListPacientView.vue'
+// src/router/index.ts
+
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import HomeView from '../views/home/HomeView.vue'
+import UserListPacientView from '../views/users/UserListPacientView.vue'
+import UserListSupplierView from '../views/users/UserListSupplierView.vue'
+import PharmacyInventoryView from '../views/pharmacy/PharmacyInventoryView.vue'
+import BillingView from '../views/pharmacy/BillingView.vue'
+import SalesListView from '../views/Sales/SaleslistView.vue'
+import BuyListView from '../views/buy/BuyListView.vue'
+import AppointmentsListView from '../views/appointments/appointmentsListView.vue'
 import BillingAppointmentsListView from '../views/BillingAppointments/BillingAppointmentsListView.vue'
 
-
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
@@ -19,6 +26,36 @@ const routes = [
     path: '/citas/facturacion',
     name: 'facturacion',
     component: BillingAppointmentsListView
+  },
+  {
+    path: '/usuarios/proveedores',
+    name: 'proveedores',
+    component: UserListSupplierView
+  },
+  {
+    path: '/farmacia/inventario',
+    name: 'inventario',
+    component: PharmacyInventoryView
+  },
+  {
+    path: '/farmacia/facturacion',
+    name: 'facturacion',
+    component: BillingView
+  },
+  {
+    path: '/ventas',
+    name: 'ventas',
+    component: SalesListView
+  },
+  {
+    path: '/compras',
+    name: 'compras',
+    component: BuyListView
+  },
+  {
+    path: '/cita',
+    name: 'cita',
+    component: AppointmentsListView
   },
   // {
   //   path: '/about',
