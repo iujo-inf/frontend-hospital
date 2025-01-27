@@ -9,6 +9,7 @@ import BuyListView from '../views/buy/BuyListView.vue'
 import AppointmentsListView from '../views/appointments/appointmentsListView.vue'
 import BillingAppointmentsListView from '../views/BillingAppointments/BillingAppointmentsListView.vue'
 import BillingEmergenciesListView from '../views/BillingEmergencies/BillingEmergenciesListView.vue'
+import BillingLaboratoriesListView from '../views/BillingLaboratories/BillingLaboratoriesListView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,6 +21,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/usuarios/pacientes',
     name: 'pacientes',
     component: UserListPacientView
+  },
+  {
+    path: '/laboratorio/facturacion',
+    name: 'facturacion-laboratorio',
+    component: BillingLaboratoriesListView
   },
   {
     path: '/citas/facturacion',
@@ -46,7 +52,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'facturacion-emergencia',
     component: BillingEmergenciesListView
   },
-  
   {
     path: '/ventas',
     name: 'ventas',

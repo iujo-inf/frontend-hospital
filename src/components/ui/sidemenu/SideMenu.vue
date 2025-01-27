@@ -2,303 +2,188 @@
   <div class="side-menu" :class="{ 'side-menu-minimized': !isOpen }">
     <div class="side-menu-content p-4">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <img
-          src="/logos/logo.png"
-          v-show="isOpen"
-          alt="Toggle"
-          width="220"
-          height="40"
-        />
+        <img src="/logos/logo.png" v-show="isOpen" alt="Toggle" width="220" height="40">
         <button class="btn ms-1" @click="toggleMenu">
-          <img
-            :src="
-              isOpen
-                ? '/iconos/angulo-derecho.svg'
-                : '/iconos/menu-hamburguesa.svg'
-            "
-            alt="Toggle"
-            width="18"
-            height="18"
-            :class="{ 'rotate-icon': isOpen }"
-          />
+          <img :src="isOpen ? '/iconos/angulo-derecho.svg' : '/iconos/menu-hamburguesa.svg'" 
+               alt="Toggle" width="18" height="18" 
+               :class="{ 'rotate-icon': isOpen }">
         </button>
       </div>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <router-link
-            class="nav-link d-flex align-items-center"
-            to="/"
-            exact-active-class="active"
-          >
-            <img
-              src="/iconos/home.svg"
-              alt="Inicio"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
+          <router-link class="nav-link d-flex align-items-center" to="/" exact-active-class="active">
+            <img src="/iconos/home.svg" alt="Inicio" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Inicio</span>
           </router-link>
         </li>
+
         <li class="nav-item">
-          <a
-            class="nav-link d-flex align-items-center"
-            href="#"
-            @click.prevent="toggleSubmenu('usuarios')"
-            :class="{ active: isInUsuariosSection }"
-          >
-            <img
-              src="/iconos/user.svg"
-              alt="Usuarios"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
+          <a class="nav-link d-flex align-items-center" href="#" 
+             @click.prevent="toggleSubmenu('usuarios')"
+             :class="{ 'active': isInUsuariosSection }">
+            <img src="/iconos/user.svg" alt="Usuarios" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Usuario</span>
-            <img
-              v-if="isOpen"
-              src="/iconos/angulo-derecho.svg"
-              :class="{ 'submenu-icon-rotated': submenuStates.usuarios }"
-              class="submenu-icon ms-auto"
-              width="12"
-              height="12"
-            />
+            <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                 :class="{ 'submenu-icon-rotated': submenuStates.usuarios }" 
+                 class="submenu-icon ms-auto" width="12" height="12">
           </a>
           <ul class="submenu" v-show="submenuStates.usuarios && isOpen">
             <li>
-              <router-link
-                class="nav-link submenu-link"
-                to="/usuarios/pacientes"
-                exact-active-class="active"
-              >
+              <router-link class="nav-link submenu-link" to="/usuarios/pacientes" exact-active-class="active">
                 <span>Pacientes</span>
               </router-link>
             </li>
             <li>
-              <router-link
-                class="nav-link submenu-link"
-                to="/usuarios/proveedores"
-                exact-active-class="active"
-              >
+              <router-link class="nav-link submenu-link" to="/usuarios/proveedores" exact-active-class="active">
                 <span>Proveedores</span>
               </router-link>
             </li>
             <li>
-              <a class="nav-link submenu-link" href="#"><span>Clientes</span></a>
+              <router-link class="nav-link submenu-link" to="/usuarios/clientes" exact-active-class="active">
+                <span>Clientes</span>
+              </router-link>
             </li>
           </ul>
         </li>
+
         <li class="nav-item">
-          <a
-            class="nav-link d-flex align-items-center"
-            href="#"
-            @click.prevent="toggleSubmenu('citas')"
-          >
-            <img
-              src="/iconos/calendar-clock.svg"
-              alt="Citas"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
+          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('citas')">
+            <img src="/iconos/calendar-clock.svg" alt="Citas" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Citas</span>
-            <img
-              v-if="isOpen"
-              src="/iconos/angulo-derecho.svg"
-              :class="{ 'submenu-icon-rotated': submenuStates.citas }"
-              class="submenu-icon ms-auto"
-              width="12"
-              height="12"
-            />
+            <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                 :class="{ 'submenu-icon-rotated': submenuStates.citas }" 
+                 class="submenu-icon ms-auto" width="12" height="12">
           </a>
           <ul class="submenu" v-show="submenuStates.citas && isOpen">
             <li>
-              <router-link class="nav-link submenu-link" to="/cita"
-                exact-active-class="active"
-                ><span>Programar Citas</span>
+              <router-link class="nav-link submenu-link" to="/cita" exact-active-class="active">
+                <span>Programar Citas</span>
               </router-link>
             </li>
             <li>
-              <router-link class="nav-link submenu-link" to="/citas/facturacion"
-                exact-active-class="active"
-                ><span>Facturación</span>
-              </router-link>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link d-flex align-items-center"
-            href="#"
-            @click.prevent="toggleSubmenu('emergencia')"
-          >
-            <img
-              src="/iconos/ambulancia.svg"
-              alt="Emergencia"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
-            <span v-show="isOpen" class="ms-3">Emergencia</span>
-            <img
-              v-if="isOpen"
-              src="/iconos/angulo-derecho.svg"
-              :class="{ 'submenu-icon-rotated': submenuStates.emergencia }"
-              class="submenu-icon ms-auto"
-              width="12"
-              height="12"
-            />
-          </a>
-          <ul class="submenu" v-show="submenuStates.emergencia && isOpen">
-            <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Listado de Emergencias</span></a
-              >
-            </li>
-            <li>
-              <router-link class="nav-link submenu-link" to="/emergencia/facturacion"
-                exact-active-class="active"
-                ><span>Facturación</span>
-              </router-link>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link d-flex align-items-center"
-            href="#"
-            @click.prevent="toggleSubmenu('farmacia')"
-            :class="{ active: isInFarmaciaSection }"
-          >
-            <img
-              src="/iconos/tratamiento.svg"
-              alt="Farmacia"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
-            <span v-show="isOpen" class="ms-3">Farmacia</span>
-            <img
-              v-if="isOpen"
-              src="/iconos/angulo-derecho.svg"
-              :class="{ 'submenu-icon-rotated': submenuStates.farmacia }"
-              class="submenu-icon ms-auto"
-              width="12"
-              height="12"
-            />
-          </a>
-          <ul class="submenu" v-show="submenuStates.farmacia && isOpen">
-            <li>
-              <router-link
-                class="nav-link submenu-link"
-                to="/farmacia/inventario"
-                exact-active-class="active"
-              >
-                <span>Inventario</span>
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                class="nav-link submenu-link"
-                to="/farmacia/facturacion"
-                exact-active-class="active"
-              >
+              <router-link class="nav-link submenu-link" to="/citas/facturacion" exact-active-class="active">
                 <span>Facturación</span>
               </router-link>
             </li>
           </ul>
         </li>
+
         <li class="nav-item">
-          <a
-            class="nav-link d-flex align-items-center"
-            href="#"
-            @click.prevent="toggleSubmenu('almacen')"
-          >
-            <img
-              src="/iconos/plataforma-rodante-alternativa.svg"
-              alt="Almacén"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
-            <span v-show="isOpen" class="ms-3">Almacén</span>
-            <img
-              v-if="isOpen"
-              src="/iconos/angulo-derecho.svg"
-              :class="{ 'submenu-icon-rotated': submenuStates.almacen }"
-              class="submenu-icon ms-auto"
-              width="12"
-              height="12"
-            />
+          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('emergencia')">
+            <img src="/iconos/ambulancia.svg" alt="Emergencia" width="17" height="17" class="iconColor">
+            <span v-show="isOpen" class="ms-3">Emergencia</span>
+            <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                 :class="{ 'submenu-icon-rotated': submenuStates.emergencia }" 
+                 class="submenu-icon ms-auto" width="12" height="12">
           </a>
-          <ul class="submenu" v-show="submenuStates.almacen && isOpen">
+          <ul class="submenu" v-show="submenuStates.emergencia && isOpen">
             <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Productos</span></a
-              >
+              <router-link class="nav-link submenu-link" to="/emergencia/listado" exact-active-class="active">
+                <span>Listado de Emergencias</span>
+              </router-link>
             </li>
             <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Entradas/Salidas</span></a
-              >
+              <router-link class="nav-link submenu-link" to="/emergencia/facturacion" exact-active-class="active">
+                <span>Facturación</span>
+              </router-link>
             </li>
           </ul>
         </li>
+
         <li class="nav-item">
-          <router-link 
-            class="nav-link d-flex align-items-center" 
-            to="/compras"
-            exact-active-class="active"
-          >
-            <img
-              src="/iconos/carrito-de-compras.svg"
-              alt="Compras"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
+          <a class="nav-link d-flex align-items-center" href="#" 
+             @click.prevent="toggleSubmenu('farmacia')"
+             :class="{ active: isInFarmaciaSection }">
+            <img src="/iconos/tratamiento.svg" alt="Farmacia" width="17" height="17" class="iconColor">
+            <span v-show="isOpen" class="ms-3">Farmacia</span>
+            <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                 :class="{ 'submenu-icon-rotated': submenuStates.farmacia }" 
+                 class="submenu-icon ms-auto" width="12" height="12">
+          </a>
+          <ul class="submenu" v-show="submenuStates.farmacia && isOpen">
+            <li>
+              <router-link class="nav-link submenu-link" to="/farmacia/inventario" exact-active-class="active">
+                <span>Inventario</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link class="nav-link submenu-link" to="/farmacia/facturacion" exact-active-class="active">
+                <span>Facturación</span>
+              </router-link>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('laboratorio')">
+            <img src="/iconos/tubo-de-analisis-de-sangre-alt.svg" alt="Laboratorio" width="17" height="17" class="iconColor">
+            <span v-show="isOpen" class="ms-3">Laboratorio</span>
+            <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                 :class="{ 'submenu-icon-rotated': submenuStates.laboratorio }" 
+                 class="submenu-icon ms-auto" width="12" height="12">
+          </a>
+          <ul class="submenu" v-show="submenuStates.laboratorio && isOpen">
+            <li>
+              <router-link class="nav-link submenu-link" to="/laboratorio/listado" exact-active-class="active">
+                <span>Listado de Laboratorios</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link class="nav-link submenu-link" to="/laboratorio/facturacion" exact-active-class="active">
+                <span>Facturación</span>
+              </router-link>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('almacen')">
+            <img src="/iconos/plataforma-rodante-alternativa.svg" alt="Almacén" width="17" height="17" class="iconColor">
+            <span v-show="isOpen" class="ms-3">Almacén</span>
+            <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                 :class="{ 'submenu-icon-rotated': submenuStates.almacen }" 
+                 class="submenu-icon ms-auto" width="12" height="12">
+          </a>
+          <ul class="submenu" v-show="submenuStates.almacen && isOpen">
+            <li>
+              <router-link class="nav-link submenu-link" to="/almacen/productos" exact-active-class="active">
+                <span>Productos</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link class="nav-link submenu-link" to="/almacen/movimientos" exact-active-class="active">
+                <span>Entradas/Salidas</span>
+              </router-link>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <router-link class="nav-link d-flex align-items-center" to="/compras" exact-active-class="active">
+            <img src="/iconos/carrito-de-compras.svg" alt="Compras" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Compras</span>
           </router-link>
         </li>
+
         <li class="nav-item">
-          <router-link 
-            class="nav-link d-flex align-items-center" 
-            to="/ventas"
-            exact-active-class="active"
-          >
-            <img
-              src="/iconos/factura-punto-de-venta.svg"
-              alt="Ventas"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
+          <router-link class="nav-link d-flex align-items-center" to="/ventas" exact-active-class="active">
+            <img src="/iconos/factura-punto-de-venta.svg" alt="Ventas" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Ventas</span>
           </router-link>
         </li>
+
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" href="#">
-            <img
-              src="/iconos/factura-punto-de-venta.svg"
-              alt="Facturación"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
+          <router-link class="nav-link d-flex align-items-center" to="/facturacion" exact-active-class="active">
+            <img src="/iconos/factura-punto-de-venta.svg" alt="Facturación" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Facturación</span>
-          </a>
+          </router-link>
         </li>
+
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" href="#">
-            <img
-              src="/iconos/mano-sosteniendo-usd.svg"
-              alt="Finanzas"
-              width="17"
-              height="17"
-              class="iconColor"
-            />
+          <router-link class="nav-link d-flex align-items-center" to="/finanzas" exact-active-class="active">
+            <img src="/iconos/mano-sosteniendo-usd.svg" alt="Finanzas" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Finanzas</span>
-          </a>
+          </router-link>
         </li>
       </ul>
       <slot></slot>
@@ -317,6 +202,7 @@ export default {
         citas: false,
         emergencia: false,
         farmacia: false,
+        laboratorio: false,
         almacen: false,
       },
       currentIcons: {
@@ -345,6 +231,7 @@ export default {
         this.submenuStates.citas = newRoute.path.startsWith("/citas");
         this.submenuStates.emergencia = newRoute.path.startsWith("/emergencia");
         this.submenuStates.farmacia = newRoute.path.startsWith("/farmacia");
+        this.submenuStates.laboratorio = newRoute.path.startsWith("/laboratorio");
         this.submenuStates.almacen = newRoute.path.startsWith("/almacen");
       },
     },
@@ -365,6 +252,7 @@ export default {
 .iconColor {
   filter: invert(48%) sepia(0%) saturate(0%) hue-rotate(147deg) brightness(89%) contrast(93%);
 }
+
 .side-menu {
   position: fixed;
   top: 0;
