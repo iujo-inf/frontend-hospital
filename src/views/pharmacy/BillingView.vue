@@ -1,8 +1,8 @@
 <template>
     <div class="DataGridbilling">
-        <BaseLayout page-title="Emergencias > Facturación">
+        <BaseLayout page-title="Farmacia > Facturación">
             <DataGridbilling /> <!-- Este es el componente hijo que se pasará al slot -->
-        </BaseLayout> <!-- Asegúrate de que este componente esté en el template -->
+        </BaseLayout> 
     </div>
 </template>
 
@@ -14,7 +14,7 @@ import DataGridbilling from '@/components/utils/pharmacy/DataGridbilling.vue';
 @Options({
     components: {
         BaseLayout,
-        DataGridbilling, // Asegúrate de registrar el componente aquí
+        DataGridbilling, 
     },
 })
 export default class BillingView extends Vue { }

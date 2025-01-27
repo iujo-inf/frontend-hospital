@@ -1,5 +1,3 @@
-// src/router/index.ts
-
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/home/HomeView.vue'
 import UserListPacientView from '../views/users/UserListPacientView.vue'
@@ -10,6 +8,7 @@ import SalesListView from '../views/Sales/SaleslistView.vue'
 import BuyListView from '../views/buy/BuyListView.vue'
 import AppointmentsListView from '../views/appointments/appointmentsListView.vue'
 import BillingAppointmentsListView from '../views/BillingAppointments/BillingAppointmentsListView.vue'
+import BillingEmergenciesListView from '../views/BillingEmergencies/BillingEmergenciesListView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,7 +23,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/citas/facturacion',
-    name: 'facturacion',
+    name: 'facturacion-citas',
     component: BillingAppointmentsListView
   },
   {
@@ -39,9 +38,15 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/farmacia/facturacion',
-    name: 'facturacion',
+    name: 'facturacion-farmacia',
     component: BillingView
   },
+  {
+    path: '/emergencia/facturacion',
+    name: 'facturacion-emergencia',
+    component: BillingEmergenciesListView
+  },
+  
   {
     path: '/ventas',
     name: 'ventas',

@@ -1,6 +1,6 @@
 <template>
     <div class="BillingAppointmentsList">
-        <BaseLayout page-title="Emergencias > Facturación">
+        <BaseLayout page-title="Citas > Facturación">
             <DataGridBillingAppointments /> <!-- Este es el componente hijo que se pasará al slot -->
         </BaseLayout> <!-- Asegúrate de que este componente esté en el template -->
     </div>
