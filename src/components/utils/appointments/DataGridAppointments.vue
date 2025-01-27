@@ -68,8 +68,10 @@
             <tbody>
                 <tr v-for="appointments in filteredappointments" :key="appointments.id">
                     
-                    <td v-bind:class="{'positive': appointments.status=='Pendiente', 'negative': appointments.status=='Atendido'}">
-                        {{ appointments.status }}
+                    <td>
+                        <span :class="['status-oval', appointments.status === 'Pendiente' ? 'available' : 'out-of-stock']">
+                        {{ appointments.status}}
+                        </span>
                     </td>
                     <td>{{ appointments.paciente }}</td>
                     <td>{{ appointments.medico }}</td>
@@ -258,5 +260,26 @@ export default {
     color: rgb(255, 255, 255);
     border-radius: 25px;
     background-color: green;
+}
+
+.status-oval {
+  display: inline-block;
+  padding: 5px 15px;
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+}
+
+.status-oval.available {
+  border: 2px solid green;
+  background-color: white;
+  color: green;
+}
+
+.status-oval.out-of-stock {
+  border: 2px solid red;
+  background-color: white;
+  color: red;
 }
 </style>

@@ -113,8 +113,10 @@
           </a>
           <ul class="submenu" v-show="submenuStates.citas && isOpen">
             <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Programar Citas</span></a
+              <router-link class="nav-link submenu-link" to="/cita"
+              exact-active-class="active"
+                ><span>Programar Citas</span>
+              </router-link
               >
             </li>
             <li>
