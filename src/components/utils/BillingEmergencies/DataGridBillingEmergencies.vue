@@ -48,7 +48,7 @@
   
   <script>
   export default {
-    name: "SalesTable",
+    name: "DataGridBillingEmergencies",
     data() {
       return {
         searchQuery: "",
