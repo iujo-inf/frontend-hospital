@@ -114,15 +114,15 @@
           <ul class="submenu" v-show="submenuStates.citas && isOpen">
             <li>
               <router-link class="nav-link submenu-link" to="/cita"
-              exact-active-class="active"
+                exact-active-class="active"
                 ><span>Programar Citas</span>
-              </router-link
-              >
+              </router-link>
             </li>
             <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Facturación</span></a
-              >
+              <router-link class="nav-link submenu-link" to="/citas/facturacion"
+                exact-active-class="active"
+                ><span>Facturación</span>
+              </router-link>
             </li>
           </ul>
         </li>
@@ -156,9 +156,10 @@
               >
             </li>
             <li>
-              <a class="nav-link submenu-link" href="#"
-                ><span>Facturación</span></a
-              >
+              <router-link class="nav-link submenu-link" to="/emergencia/facturacion"
+                exact-active-class="active"
+                ><span>Facturación</span>
+              </router-link>
             </li>
           </ul>
         </li>
@@ -279,7 +280,7 @@
           <a class="nav-link d-flex align-items-center" href="#">
             <img
               src="/iconos/factura-punto-de-venta.svg"
-              alt="Citas"
+              alt="Facturación"
               width="17"
               height="17"
               class="iconColor"
@@ -291,7 +292,7 @@
           <a class="nav-link d-flex align-items-center" href="#">
             <img
               src="/iconos/mano-sosteniendo-usd.svg"
-              alt="Citas"
+              alt="Finanzas"
               width="17"
               height="17"
               class="iconColor"
@@ -340,21 +341,11 @@ export default {
     $route: {
       immediate: true,
       handler(newRoute) {
-        if (newRoute.path.startsWith("/usuarios")) {
-          this.submenuStates.usuarios = true;
-        }
-        if (newRoute.path.startsWith("/citas")) {
-          this.submenuStates.citas = true;
-        }
-        if (newRoute.path.startsWith("/emergencia")) {
-          this.submenuStates.emergencia = true;
-        }
-        if (newRoute.path.startsWith("/farmacia")) {
-          this.submenuStates.farmacia = true;
-        }
-        if (newRoute.path.startsWith("/almacen")) {
-          this.submenuStates.almacen = true;
-        }
+        this.submenuStates.usuarios = newRoute.path.startsWith("/usuarios");
+        this.submenuStates.citas = newRoute.path.startsWith("/citas");
+        this.submenuStates.emergencia = newRoute.path.startsWith("/emergencia");
+        this.submenuStates.farmacia = newRoute.path.startsWith("/farmacia");
+        this.submenuStates.almacen = newRoute.path.startsWith("/almacen");
       },
     },
   },
@@ -372,8 +363,7 @@ export default {
 
 <style scoped>
 .iconColor {
-  filter: invert(48%) sepia(0%) saturate(0%) hue-rotate(147deg) brightness(89%)
-    contrast(93%);
+  filter: invert(48%) sepia(0%) saturate(0%) hue-rotate(147deg) brightness(89%) contrast(93%);
 }
 .side-menu {
   position: fixed;
@@ -417,14 +407,17 @@ export default {
 .nav-link img {
   min-width: 24px;
 }
+
 .rotate-icon {
   transform: rotate(180deg);
   transition: transform 0.3s ease;
 }
+
 .nav-link {
   transition: background-color 0.3s ease, color 0.3s ease;
   font-weight: medium;
 }
+
 .nav-link:hover {
   background-color: #e0e0e0;
   color: #2d60ff;
@@ -433,6 +426,7 @@ export default {
 .nav-link:hover .iconColor {
   fill: #2d60ff;
 }
+
 img {
   transition: transform 0.3s ease;
 }
@@ -485,8 +479,7 @@ img {
 }
 
 .nav-link.active .iconColor {
-  filter: invert(32%) sepia(95%) saturate(1029%) hue-rotate(211deg)
-    brightness(97%) contrast(108%);
+  filter: invert(32%) sepia(95%) saturate(1029%) hue-rotate(211deg) brightness(97%) contrast(108%);
 }
 
 .submenu .nav-link.active {
