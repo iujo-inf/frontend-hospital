@@ -5,54 +5,54 @@
                 placeholder="Buscar por  paciente, doctor" v-model="searchQuery" />
             <div>
                 <button class="btn btn-primary btn-block" style="display: flex;" @click="openModal()">
-                    <img src="/iconos/agregar.svg" alt="ventas" width="45" height="45" class="iconColor">
-                    <b>Agregar Cita o paciente</b>
+                    <img src="/iconos/agregar.svg" alt="citas" width="45" height="45" class="iconColor">
+                    <b>Programar Cita</b>
                 </button>
             </div>
         </div>
         
-        <!---------------- Modal Agregar/Editar venta ---------------->
+        <!---------------- Modal Agregar/Editar Cita ---------------->
         <div v-if="showModal" class="modal-overlay">
             <div class="modal-content">
-                <h2 class="modal-title">{{ isEditing ? 'Editar' : 'Agregar' }} Venta</h2>
-                <form @submit.prevent="savequotes">
+                <h2 class="modal-title">{{ isEditing ? 'Editar' : 'Agregar' }} Cita</h2>
+                <form @submit.prevent="saveappointments">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="status">Estado</label>
-                            <select id="status" v-model="currentquotes.status" required class="form-control">
+                            <select id="status" v-model="currentappointments.status" required class="form-control">
                                 <option value="Atendido">Atendido</option>
-                                <option value="Espera">Espera</option>
+                                <option value="Pendiente">Pendiente</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="date">Paciente</label>
-                            <input type="text" id="date" v-model="currentquotes.paciente" required class="form-control">
+                            <input type="text" id="date" v-model="currentappointments.paciente" required class="form-control">
                         </div>                                            
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="Medico">Medico</label>
-                            <input type="text" id="medico" v-model="currentquotes.medico" required class="form-control">
+                            <input type="text" id="medico" v-model="currentappointments.medico" required class="form-control">
                         </div>   
                         <div class="form-group">
                             <label for="date">Fecha</label>
-                            <input type="date" id="date" v-model="currentquotes.date" required class="form-control">
+                            <input type="date" id="date" v-model="currentappointments.date" required class="form-control">
                         </div>   
                     </div>
                     <div class="form-row">                        
                         <div class="form-group">
                             <label for="Area">Area</label>
-                            <input type="text" id="paciente" v-model="currentquotes.area" required class="form-control">
+                            <input type="text" id="paciente" v-model="currentappointments.area" required class="form-control">
                         </div>                        
                     </div>
                     <div class="form-group button-group">
                         <button type="button" @click="closeModal" class="btn btn-secondary btn-lg">Cancelar</button>
-                        <button type="submit" class="btn btn-primary btn-lg">{{ isEditing ? 'Actualizar' : 'Guardar' }}</button>
+                        <button type="submit" class="btn btn-primary btn-lg">{{ isEditing ? 'Actualizar' : 'Programar Cita' }}</button>
                     </div>
                 </form>
             </div>
         </div>
-        <!---------------- Modal Agregar/Editar Venta ---------------->
+        <!---------------- Modal Agregar/Editar Cita ---------------->
 
         <table class="table table-hover">
             <thead>
@@ -66,17 +66,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="quotes in filteredquotes" :key="quotes.id">
-                    <td v-bind:class="{'positive': quotes.status=='Espera', 'negative': quotes.status=='Atendido'}">
-                        {{ quotes.status }}
+                <tr v-for="appointments in filteredappointments" :key="appointments.id">
+                    
+                    <td v-bind:class="{'positive': appointments.status=='Pendiente', 'negative': appointments.status=='Atendido'}">
+                        {{ appointments.status }}
                     </td>
-                    <td>{{ quotes.paciente }}</td>
-                    <td>{{ quotes.medico }}</td>
-                    <td>{{ quotes.date }}</td>
-                    <td>{{ quotes.area }}</td>
+                    <td>{{ appointments.paciente }}</td>
+                    <td>{{ appointments.medico }}</td>
+                    <td>{{ appointments.date }}</td>
+                    <td>{{ appointments.area }}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm" @click="editQuotes(quotes.id)">Editar</button>
-                        <button class="btn btn-danger btn-sm" @click="deleteQuotes(quotes.id)">Eliminar</button>
+                        <button class="btn btn-primary btn-sm" @click="editAppointments(appointments.id)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @click="deleteAppointments(appointments.id)">Eliminar</button>
                     </td>
                 </tr>
             </tbody>
@@ -86,13 +87,13 @@
 
 <script>
 export default {
-    name: 'DataGridQuote',
+    name: 'DataGridAppointments',
     data() {
         return {
             searchQuery: '',
             showModal: false,
             isEditing: false,
-            currentquotes: {
+            currentappointments: {
                 id: null,
                 date: '',
                 medico: '',
@@ -100,20 +101,20 @@ export default {
                 paciente: '',
                 area: ''
             },
-            quotes: [
-                { id: 1, status: 'Espera', date: '2024-02-19', paciente: 'Maria', medico: "Simom", area: 'Consultoria N13' },
-                { id: 2, status: 'Atendido', date: '2024-05-26', paciente:'Digelys', medico: "Jose", area: 'Consultoria N14' },
-                { id: 3, status: 'Espera', date: '2025-01-01', paciente: 'Arianna', medico: "Miguel", area: 'Consultoria N16' },
+            appointments: [
+                { id: 1, status: 'Pendiente', date: '2024-02-19', paciente: 'María', medico: "Simón", area: 'Consultoria N13' },
+                { id: 2, status: 'Atendido', date: '2024-05-26', paciente:'Deigelys', medico: "José", area: 'Consultoria N14' },
+                { id: 3, status: 'Pendiente', date: '2025-01-01', paciente: 'Ariadna', medico: "Miguel", area: 'Consultoria N16' },
                 { id: 4, status: 'Atendido', date: '2025-01-05', paciente: 'Diego', medico: "Luis", area: 'Consultoria N1' },
-                { id: 5, status: 'Espera', date: '2025-01-14', paciente: 'Daniel', medico: "Andrea", area: 'Consultoria N4' },
+                { id: 5, status: 'Pendiente', date: '2025-01-14', paciente: 'Daniel', medico: "Andrea", area: 'Consultoria N4' },
                 { id: 5, status: 'Atendido', date: '2025-01-22', paciente: 'Francisco', medico: "Kelvin", area: 'Consultoria N55' },
             ],
         };
     },
     computed: {
-        filteredquotes() {
-            return this.quotes.filter(quotes => {
-                const fullName = `${quotes.status} ${quotes.medico} ${quotes.paciente} ${quotes.area}`.toLowerCase();
+        filteredappointments() {
+            return this.appointments.filter(appointments => {
+                const fullName = `${appointments.status} ${appointments.medico} ${appointments.paciente} ${appointments.area}`.toLowerCase();
                 return fullName.includes(this.searchQuery.toLowerCase());
             });
         },
@@ -121,7 +122,7 @@ export default {
     methods: {
         openModal() {
             this.isEditing = false;
-            this.currentquotes = {
+            this.currentappointments = {
                 id: null,
                 date: '',
                 medico: '',
@@ -131,10 +132,10 @@ export default {
             };
             this.showModal = true;
         },        
-        editQuotes(id) {
-            const quotesToEdit = this.quotes.find(quotes => quotes.id === id);
-            if (quotesToEdit) {
-                this.currentquotes = { ...quotesToEdit };
+        editAppointments(id) {
+            const appointmentsToEdit = this.appointments.find(appointments => appointments.id === id);
+            if (appointmentsToEdit) {
+                this.currentappointments = { ...appointmentsToEdit };
                 this.isEditing = true;
                 this.showModal = true;
             }
@@ -143,25 +144,25 @@ export default {
             this.showModal = false;
             this.isEditing = false;
         },
-        savequotes() {
+        saveappointments() {
             if (this.isEditing) {
-                const index = this.quotes.findIndex(quotes => quotes.id === this.currentquotes.id);
+                const index = this.appointments.findIndex(appointments => appointments.id === this.currentappointments.id);
                 if (index !== -1) {
-                    this.quotes.splice(index, 1, { ...this.currentquotes });
+                    this.appointments.splice(index, 1, { ...this.currentappointments });
                 }
             } else {
-                const newId = Math.max(...this.quotes.map(b => b.id)) + 1;
-                this.quotes.push({
+                const newId = Math.max(...this.appointments.map(b => b.id)) + 1;
+                this.appointments.push({
                     id: newId,
-                    ...this.currentquotes
+                    ...this.currentappointments
                 });
             }
             this.closeModal();
         },
         
-        deleteQuotes(id) {
-            if (confirm(`¿Está seguro que desea eliminar la compra con ID: ${id}?`)) {
-                this.quotes = this.quotes.filter(quotes => quotes.id !== id);
+        deleteAppointments(id) {
+            if (confirm(`¿Está seguro que desea eliminar la cita con ID: ${id}?`)) {
+                this.appointments = this.appointments.filter(appointments => appointments.id !== id);
             }
         }
     },
@@ -246,11 +247,16 @@ export default {
 .btn-secondary {
     margin-right: 10px;
 }
+
 .positive {
-    color: green;
+    color: rgb(255, 255, 255);
+    border-radius: 25px;
+    background-color: red;
 }
 
 .negative {
-    color: red;
+    color: rgb(255, 255, 255);
+    border-radius: 25px;
+    background-color: green;
 }
 </style>

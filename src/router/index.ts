@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import UserListPacientView from '../views/UserListPacientView.vue'
-import quoteListView from '../views/quote/quoteListView.vue'
+import AppointmentsListView from '../views/appointments/appointmentsListView.vue'
+import appointmentsListView from '../views/appointments/appointmentsListView.vue'
 
 const routes = [
   {
@@ -17,7 +18,7 @@ const routes = [
   {
     path: '/cita',
     name: 'cita',
-    component: quoteListView
+    component: appointmentsListView
   },
   // {
   //   path: '/about',
