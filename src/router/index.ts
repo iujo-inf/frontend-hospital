@@ -15,8 +15,8 @@ const routes = [
     component: UserListPacientView
   },
   {
-    path: '/loguin',
-    name: 'loguin',
+    path: '/login',
+    name: 'login',
     component: homeScreenView
   },
   // {
