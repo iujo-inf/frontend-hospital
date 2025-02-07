@@ -34,6 +34,15 @@
               </router-link>
             </li>
             <li>
+              <router-link 
+                  class="nav-link submenu-link" 
+                  to="/usuarios/doctor"
+                  exact-active-class="active"
+              >
+                  <span>Doctores</span>
+              </router-link>
+            </li>
+            <li>
               <router-link class="nav-link submenu-link" to="/usuarios/proveedores" exact-active-class="active">
                 <span>Proveedores</span>
               </router-link>
@@ -146,8 +155,12 @@
           </a>
           <ul class="submenu" v-show="submenuStates.almacen && isOpen">
             <li>
-              <router-link class="nav-link submenu-link" to="/almacen/productos" exact-active-class="active">
-                <span>Productos</span>
+              <router-link 
+                  class="nav-link submenu-link" 
+                  to="/almacen/productos"
+                  exact-active-class="active"
+              >
+                  <span>Productos</span>
               </router-link>
             </li>
             <li>
@@ -178,13 +191,16 @@
             <span v-show="isOpen" class="ms-3">Facturación</span>
           </router-link>
         </li>
-
         <li class="nav-item">
-          <router-link class="nav-link d-flex align-items-center" to="/finanzas" exact-active-class="active">
-            <img src="/iconos/mano-sosteniendo-usd.svg" alt="Finanzas" width="17" height="17" class="iconColor">
-            <span v-show="isOpen" class="ms-3">Finanzas</span>
+          <router-link 
+              class="nav-link d-flex align-items-center" 
+              to="/finanzas/resumen"
+              exact-active-class="active"
+          >
+              <img src="/iconos/mano-sosteniendo-usd.svg" alt="Citas" width="17" height="17" class="iconColor">
+              <span v-show="isOpen" class="ms-3">Finanzas</span>
           </router-link>
-        </li>
+      </li>
       </ul>
       <slot></slot>
     </div>

@@ -10,6 +10,11 @@ import AppointmentsListView from '../views/appointments/appointmentsListView.vue
 import BillingAppointmentsListView from '../views/BillingAppointments/BillingAppointmentsListView.vue'
 import BillingEmergenciesListView from '../views/BillingEmergencies/BillingEmergenciesListView.vue'
 import BillingLaboratoriesListView from '../views/BillingLaboratories/BillingLaboratoriesListView.vue'
+import EmergencyListView from '@/views/emergency/EmergencyListView.vue'
+import FinanceView from '@/views/finance/FinanceView.vue'
+import StoreProductsListView from '@/views/storeProducts/StoreProductsListView.vue'
+import doctorView from '@/views/doctors/doctorview.vue'
+import homeScreenView from '@/views/homeScreen/homeScreenView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,9 +23,19 @@ const routes: Array<RouteRecordRaw> = [
     component: HomeView
   },
   {
+    path: '/login',
+    name: 'login',
+    component: homeScreenView
+  },
+  {
     path: '/usuarios/pacientes',
     name: 'pacientes',
     component: UserListPacientView
+  },
+  {
+    path: '/usuarios/doctor',
+    name: 'doctor',
+    component: doctorView
   },
   {
     path: '/laboratorio/facturacion',
@@ -48,9 +63,19 @@ const routes: Array<RouteRecordRaw> = [
     component: BillingView
   },
   {
+    path: '/emergencia/listado',
+    name: 'listado-emergencia',
+    component: EmergencyListView
+  },
+  {
     path: '/emergencia/facturacion',
     name: 'facturacion-emergencia',
     component: BillingEmergenciesListView
+  },
+  {
+    path: '/almacen/productos',
+    name: 'productos',
+    component: StoreProductsListView
   },
   {
     path: '/ventas',
@@ -67,6 +92,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'cita',
     component: AppointmentsListView
   },
+  {
+    path: '/finanzas/resumen',
+    name: 'finanzas',
+    component: FinanceView
+  } 
   // {
   //   path: '/about',
   //   name: 'about',
