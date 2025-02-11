@@ -97,10 +97,14 @@
                             width="12" height="12">
                     </a>
                     <ul class="submenu" v-show="submenuStates.laboratorio && isOpen">
-                        <li>
-                            <a class="nav-link submenu-link" href="#">
-                                <span>Listado de Laboratorios</span>
-                            </a>
+                          <li>
+                            <router-link 
+                                class="nav-link submenu-link" 
+                                to="/usuarios/laboratory"
+                                exact-active-class="active"
+                            >
+                                <span>Laboratory</span>
+                            </router-link>
                         </li>
                         <li>
                             <router-link class="nav-link submenu-link" to="/laboratorio/facturacion"
