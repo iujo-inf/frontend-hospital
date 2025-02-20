@@ -83,19 +83,15 @@ const routes: Array<RouteRecordRaw> = [
     name: 'productos',
     component: StoreProductsListView
   },
-  /*{
+  {
     path: '/ventas',
     name: 'ventas',
-
-    component: SalesListView
-
     component: SalesListView,
-    meta: { requiresAuth: true }
-
+    meta: { 
+      requiresAuth: true,
+      title: 'Ventas'
+    }
   },
-
-  },*/
-
   {
     path: '/compras',
     name: 'compras',
