@@ -10,7 +10,7 @@
       </div>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <router-link class="nav-link d-flex align-items-center" to="/" exact-active-class="active">
+          <router-link class="nav-link d-flex align-items-center" to="/home" exact-active-class="active">
             <img src="/iconos/home.svg" alt="Inicio" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Inicio</span>
           </router-link>
@@ -199,7 +199,16 @@
               </router-link>
             </li>
             <li>
+
               <router-link class="nav-link submenu-link" to="/finanzas/reportes" exact-active-class="active">
+
+              <router-link class="nav-link submenu-link" to="/compras" exact-active-class="active">
+                <span>Compras</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link class="nav-link submenu-link" to="/reportes" exact-active-class="active">
+
                 <span>Reportes</span>
               </router-link>
             </li>
@@ -252,6 +261,7 @@
           path.startsWith("/ventas") ||
           path.startsWith("/reportes");
       },
+
       isInComprasSection() {
         const path = this.$route.path;
         return path.startsWith("/compras");
@@ -303,6 +313,72 @@
             path.startsWith("/reportes")) {
             this.submenuStates.finanzas = true;
           } 
+
+    };
+  },
+  computed: {
+    isInUsuariosSection() {
+      const path = this.$route.path;
+      return path.startsWith("/usuarios") || path.startsWith("/usuarios/clientes");
+    },
+    isInFarmaciaSection() {
+      const path = this.$route.path;
+      return path.startsWith("/farmacia");
+    },
+    isInFinanzasSection() {
+      const path = this.$route.path;
+      return path.startsWith("/finanzas") || 
+             path.startsWith("/ventas") || 
+             path.startsWith("/compras") ||
+             path.startsWith("/reportes");
+    },
+    isInCitasSection() {
+      const path = this.$route.path;
+      return path.startsWith("/citas") || path.startsWith("/cita");
+    },
+    isInEmergenciaSection() {
+      const path = this.$route.path;
+      return path.startsWith("/emergencia");
+    },
+    isInLaboratorioSection() {
+      const path = this.$route.path;
+      return path.startsWith("/laboratorio");
+    },
+    isInAlmacenSection() {
+      const path = this.$route.path;
+      return path.startsWith("/almacen");
+    }
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler(newRoute) {
+        const path = newRoute.path;
+        
+        // Resetear todos los estados
+        Object.keys(this.submenuStates).forEach(key => {
+          this.submenuStates[key] = false;
+        });
+
+        // Activar el submenú correspondiente
+        if (path.startsWith("/usuarios") || path.startsWith("/usuarios/clientes")) {
+          this.submenuStates.usuarios = true;
+        } else if (path.startsWith("/citas") || path.startsWith("/cita")) {
+          this.submenuStates.citas = true;
+        } else if (path.startsWith("/emergencia")) {
+          this.submenuStates.emergencia = true;
+        } else if (path.startsWith("/farmacia")) {
+          this.submenuStates.farmacia = true;
+        } else if (path.startsWith("/laboratorio")) {
+          this.submenuStates.laboratorio = true;
+        } else if (path.startsWith("/almacen")) {
+          this.submenuStates.almacen = true;
+        } else if (path.startsWith("/finanzas") || 
+                   path.startsWith("/ventas") || 
+                   path.startsWith("/compras") ||
+                   path.startsWith("/reportes")) {
+          this.submenuStates.finanzas = true;
+
         }
       }
     },

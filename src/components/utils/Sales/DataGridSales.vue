@@ -2,7 +2,7 @@
     <div class="container mt-5">
         <div class="grid-view">
             <input type="text" class="form-control mb-3"
-                placeholder="Buscar por  tipo, emergencia,cita y farmacia" v-model="searchQuery" />
+                placeholder="Buscar..." v-model="searchQuery" />
             <div>
                 <button class="btn btn-primary btn-block" style="display: flex;" @click="openModal()">
                     <img src="/iconos/agregar.svg" alt="ventas" width="45" height="45" class="iconColor">
@@ -18,37 +18,48 @@
                 <form @submit.prevent="savesales">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="type">Descripcion</label>
-                            <input type="text" id="description" v-model="currentsales.description" required class="form-control">
+                            <label for="type">Buscar Cliente</label>
+                            <select id="description" v-model="currentsales.client_id" required class="form-control">
+                                <option value="" disabled selected>Selecciona una opción</option> <!-- Opción por defecto -->
+                                <option v-for="clients in localClients" :key="clients.id" :value="clients.id">{{ clients.name }} {{ clients.last_name }}</option>
+                                <!-- Agrega más opciones según sea necesario -->
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="date">Fecha</label>
-                            <input type="date" id="date" v-model="currentsales.date" required class="form-control">
-                        </div>                                            
+                            <label for="type">Buscar Paciente</label>
+                            <select id="description" v-model="currentsales.patient_id" required class="form-control">
+                                <option value="" disabled selected>Selecciona una opción</option> <!-- Opción por defecto -->
+                                <option v-for="patient in localPatients" :key="patient.id" :value="patient.id">{{ patient.firstName }} {{ patient.lastName }}</option>
+                                <!-- Agrega más opciones según sea necesario -->
+                            </select>
+                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="type">Transaccion</label>
-                            <input type="text" id="type" v-model="currentsales.invoiceNumber" required class="form-control">
-                        </div>   
+                            <label for="type">Buscar Producto</label>
+                            <select id="description" v-model="currentsales.product_id" required class="form-control">
+                                <option value="" disabled selected>Selecciona una opción</option> <!-- Opción por defecto -->
+                                <option v-for="products in localProducts" :key="products.id" :value="products.id">{{ products.name }}</option>
+                                <!-- Agrega más opciones según sea necesario -->
+                            </select>
+                        </div>
                         <div class="form-group">
-                            <label for="invoiceNumber">card</label>
-                            <input type="text" id="invoiceNumber" v-model="currentsales.card" required
-                                class="form-control">
+                            <label for="type">Método de Pago</label>
+                            <select id="description" v-model="currentsales.payment_type_id" required class="form-control">
+                                <option value="" disabled selected>Selecciona una opción</option>
+                                <option v-for="payment in localPayments" :key="payment.id" :value="payment.id">{{ payment.description }}</option>
+                                <!-- Agrega más opciones según sea necesario -->
+                            </select>
                         </div>
                     </div>
-                    <div class="form-row">                        
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="amount">Cantidad</label>
-                            <input type="number" id="amount" v-model="currentsales.amount" required class="form-control">
+                            <label for="price">Precio</label>
+                            <input type="number" id="price" v-model="currentsales.price" required class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="description">Tipo</label>
-                            <select id="description" v-model="currentsales.type" required class="form-control">
-                                <option value="Emergencia">Emergencia</option>
-                                <option value="Cita">Cita</option>
-                                <option value="farmacia">farmacia</option>
-                            </select>
+                            <label for="quantity">Cantidad</label>
+                            <input type="number" id="quantity" v-model="currentsales.quantity" required class="form-control">
                         </div>
                     </div>
                     <div class="form-group button-group">
@@ -63,28 +74,20 @@
         <table class="table table-hover">
             <thead>
                 <tr style="border-radius: 30px;">
-                    <th>Descripcion</th>
-                    <th>Transaccion</th>
-                    <th>Tipo</th>
-                    <th>Card</th>
                     <th>Fecha</th>
-                    <th>Cantidad</th>
-                    <th>Factura</th>
+                    <th>Cliente</th>
+                    <th>Nro. Factura</th>
+                    <th>Monto</th>
+                    <th>Estatus</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="sales in filteredsales" :key="sales.id">
-                    <td>{{ sales.description }}</td>
-                    <td>#{{ sales.invoiceNumber }}</td>
-                    <td>{{ sales.type }}</td>
-                    <td>{{ sales.card }}</td>
-                    <td>{{ sales.date }}</td>
-                    <td v-bind:class="{'positive': sales.amount > 0, 'negative': sales.amount < 0}">
-                         {{ sales.amount }}
-                    </td>
-                    <td>
-                        <button class="btn btn-primary btn-sm">Descargar</button>
-                    </td>
+                    <td>{{ sales.billing_date }}</td>
+                    <td>{{ sales.client?.name }} {{ sales.client?.last_name }}</td>
+                    <td>{{ sales.num_fact }}</td>
+                    <td>{{ sales.sale?.amount || 0 }}</td>
+                    <td>{{ sales.billing_status }}</td>
                 </tr>
             </tbody>
         </table>
@@ -92,8 +95,33 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
 export default {
     name: 'DataGridSales',
+    props: {
+        sales: {
+            type: Array,
+            required: false
+        },
+        clients: {
+            type: Array,
+            required: false
+        },
+        products: {
+            type: Array,
+            required: false
+        },
+        patients: {
+            type: Array,
+            required: false
+        },
+        payments: {
+            type: Array,
+            required: false
+        },
+    },
     data() {
         return {
             searchQuery: '',
@@ -101,61 +129,213 @@ export default {
             isEditing: false,
             currentsales: {
                 id: null,
-                date: '',
-                type: '',
-                invoiceNumber: '',
-                amount: 0,
-                description: ''
+                client_id: '',
+                product_id: '',
+                patient_id: '',
+                quantity: 1,
+                price:0.0
             },
-            sales: [
-                { id: 1, invoiceNumber: '422001', date: '2024-02-19', amount: -2500, type: "Emergencia", description: 'Atropello' , card: '1234****'},
-                { id: 2, invoiceNumber: '423001', date: '2024-05-26', amount: 750, type: "cita", description: 'gripe' , card: '1234****'},
-                { id: 3, invoiceNumber: '418005', date: '2025-01-01', amount: -150, type: "farmacia", description: 'metronidazol' , card: '1234****'},
-                { id: 4, invoiceNumber: '412009', date: '2025-01-05', amount: -1050, type: "cita", description: 'sida' , card: '1234****'},
-                { id: 5, invoiceNumber: '422001', date: '2025-01-14', amount: 840, type: "farmacia", description: 'acetaminofen' , card: '1234****'},
-                { id: 5, invoiceNumber: '422001', date: '2025-01-22', amount: 5000, type: "emergencia", description: 'disparo' , card: '1234****'},
-            ],
+            localSales: [],
+            localClients: [],
+            localProducts: [],
+            localPatients: [],
+            localPayments: [],
         };
+    },
+    watch: {
+        // Observar cambios en la prop sales
+        sales: {
+            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            handler(newSales) {
+                if (newSales) {
+                    this.localSales = newSales.map(sale => ({
+                        ...sale,
+                        sale: sale.sale || { amount: 0 },
+                        client: sale.client || { name: '', last_name: '' }
+                    }));
+                }
+            }
+        },
+        clients: {
+            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            handler(newClient) {
+                if (newClient) {
+                    this.localClients = newClient.map(client => ({
+                        ...client,
+                    }));
+                }
+            }
+        },
+        products: {
+            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            handler(newProducts) {
+                if (newProducts) {
+                    this.localProducts = newProducts.map(Products => ({
+                        ...Products,
+                    }));
+                }
+            }
+        },
+        patients: {
+            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            handler(newPatient) {
+                if (newPatient) {
+                    this.localPatients = newPatient.map(Patient => ({
+                        ...Patient,
+                    }));
+                }
+            }
+        },
+        payments: {
+            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            handler(newPayment) {
+                if (newPayment) {
+                    this.localPayments = newPayment.map(Payment => ({
+                        ...Payment,
+                    }));
+                }
+            }
+        },
+    },
+    created() {
+        // Copia los datos de la prop sales a localSales
+        this.localSales = this.sales.map(sale => ({
+            ...sale,
+            sale: sale.sale || { amount: 0 },
+            client: sale.client || { name: '', last_name: '' }
+        }));
+        this.localClients = [...this.clients];
+        this.localProducts = [...this.products];
+        this.localPatients = [...this.patients];
+        this.localPayments = [...this.payments];
+        //console.log(this.localSales)
+        //this.localBillingDetail = [...this.billingDetail];
     },
     computed: {
         filteredsales() {
-            return this.sales.filter(sales => {
-                const fullName = `${sales.invoiceNumber} ${sales.type} ${sales.date} ${sales.description}`.toLowerCase();
-                return fullName.includes(this.searchQuery.toLowerCase());
+            return this.localSales.map(sales => ({
+                ...sales,
+                sale: sales.sale || { amount: 0 }, // Si sale es null, proporciona un objeto por defecto
+                client: sales.client || { name: '', last_name: '' }, // Si client es null, proporciona un objeto por defecto
+            })).filter(sales => {
+                const searchString = `${sales.billing_date || ''} ${sales.client.name || ''} ${sales.client.last_name || ''} ${sales.num_fact || ''} ${sales.sale.amount || 0} ${sales.billing_status || ''}`.toLowerCase();
+                return searchString.includes(this.searchQuery.toLowerCase());
             });
-        },
+        }
     },
     methods: {
         openModal() {
             this.isEditing = false;
             this.currentsales = {
                 id: null,
-                date: '',
-                type: '',
-                invoiceNumber: '',
-                amount: 0,
-                description: 'Enfermo'
+                client_id: '',
+                product_id: '',
+                quantity: 1,
+                price:0.0
             };
             this.showModal = true;
         },
         closeModal() {
             this.showModal = false;
             this.isEditing = false;
+            this.currentsales = {
+                id: null,
+                client_id: '',
+                product_id: '',
+                patient_id: '',
+                quantity: 1,
+                price: 0.0,
+                payment_type_id: ''
+            };
         },
-        savesales() {
-            if (this.isEditing) {
-                const index = this.sales.findIndex(sales => sales.id === this.currentsales.id);
-                if (index !== -1) {
-                    this.sales.splice(index, 1, { ...this.currentsales });
+        async savesales() {
+            try {
+                // Validar datos antes de enviar
+                if (!this.currentsales.client_id || 
+                    !this.currentsales.product_id || 
+                    !this.currentsales.payment_type_id ||
+                    !this.currentsales.quantity ||
+                    !this.currentsales.price) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos requeridos',
+                        text: 'Por favor complete todos los campos obligatorios'
+                    });
+                    return;
                 }
-            } else {
-                const newId = Math.max(...this.sales.map(b => b.id)) + 1;
-                this.sales.push({
-                    id: newId,
-                    ...this.currentsales
+
+                let form = {
+                    patient_id: this.currentsales.patient_id,
+                    client_id: this.currentsales.client_id,
+                    BillingDetails: [
+                        {
+                            product_id: this.currentsales.product_id,
+                            quantity: this.currentsales.quantity,
+                            price: this.currentsales.price,
+                        }
+                    ],
+                    payment_type_id: this.currentsales.payment_type_id,
+                }
+
+                console.log('Datos a enviar:', form);
+
+                const response = await axios.post('https://backend-hospital-mediplus.onrender.com/api/billing', form);
+                console.log('Respuesta del servidor:', response.data);
+
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Venta creada con éxito',
+                    timer: 1500
+                });
+
+                // Actualizar la lista de ventas
+                if (response.data) {
+                    // Agregar la nueva venta al array local
+                    this.localSales.push({
+                        id: response.data.id,
+                        billing_date: new Date().toISOString(),
+                        client: this.localClients.find(c => c.id === this.currentsales.client_id),
+                        num_fact: response.data.num_fact || '',
+                        sale: {
+                            amount: this.currentsales.price * this.currentsales.quantity
+                        },
+                        billing_status: 'Completado'
+                    });
+                }
+
+                // Cerrar el modal y limpiar el formulario
+                this.closeModal();
+
+                // Emitir evento para actualizar la vista padre si es necesario
+                this.$emit('sale-added');
+
+            } catch (error) {
+                console.error('Error completo:', error);
+                console.error('Respuesta del servidor:', error.response?.data);
+                
+                let errorMessage = 'Error al guardar la venta';
+                
+                if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+                    errorMessage = error.response.data.errors
+                        .map(err => {
+                            if (typeof err === 'string') return err;
+                            return err.msg || err.message || JSON.stringify(err);
+                        })
+                        .filter(Boolean)
+                        .join('\n');
+                } else if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    html: errorMessage.replace(/\n/g, '<br>'),
+                    confirmButtonText: 'Entendido'
                 });
             }
-            this.closeModal();
         },
     },
 };

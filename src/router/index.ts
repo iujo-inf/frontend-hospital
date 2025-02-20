@@ -17,6 +17,8 @@ import StoreProductsListView from '@/views/storeProducts/StoreProductsListView.v
 import doctorView from '@/views/doctors/doctorview.vue'
 import homeScreenView from '@/views/homeScreen/homeScreenView.vue'
 import UserListClientView from '../views/users/UserListClientView.vue'
+import UserListPatientView from '../views/users/UserListPatientView.vue'
+import ReportsView from '@/views/ReportsView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -32,8 +34,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/usuarios/pacientes',
-    name: 'pacientes',
-    component: UserListPacientView,
+    name: 'UserListPatient',
+    component: UserListPatientView,
     meta: { requiresAuth: true }
   },
   {
@@ -85,7 +87,11 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/ventas',
     name: 'ventas',
-    component: SalesListView
+    component: SalesListView,
+    meta: { 
+      requiresAuth: true,
+      title: 'Ventas'
+    }
   },
   {
     path: '/compras/solicitar-compra',
@@ -106,6 +112,15 @@ const routes: Array<RouteRecordRaw> = [
     path: '/finanzas/resumen',
     name: 'finanzas',
     component: FinanceView
+  },
+  {
+    path: '/reportes',
+    name: 'reportes',
+    component: ReportsView,
+    meta: { 
+      requiresAuth: true,
+      title: 'Reportes'
+    }
   },
   {
     path: '/usuarios/clientes',
