@@ -1,7 +1,14 @@
 <template>
     <div class="SalesList">
         <BaseLayout page-title="Ventas">
-            <DataGridSales :sales="salesData" :clients="clientData"  :products="productsData" :patients="patientsData" :payments="paymentData"/>
+            <DataGridSales 
+                :sales="salesData" 
+                :clients="clientData"  
+                :products="productsData" 
+                :patients="patientsData" 
+                :payments="paymentData"
+                @sale-added="loadSalesData"
+            />
         </BaseLayout>
     </div>
 </template>
@@ -20,44 +27,66 @@ import axios from 'axios';
     },
 })
 export default class SalesListView extends Vue {
-    salesData = []; // Inicializa salesData como un array vacío
+    salesData = [];
     clientData = [];
     productsData = [];
     patientsData = [];
     paymentData = [];
+
     async mounted() {
+        await this.loadAllData();
+    }
+
+    async loadAllData() {
+        await Promise.all([
+            this.loadSalesData(),
+            this.loadClientData(),
+            this.loadProductData(),
+            this.loadPatientData(),
+            this.loadPaymentData()
+        ]);
+    }
+
+    async loadSalesData() {
         try {
             const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/billing');
-            this.salesData = response.data.data.bills; // Asigna los datos a salesData
-            console.log(response)
+            this.salesData = response.data.data.bills;
         } catch (error) {
-            console.error('Error al consumir la API:', error);
+            console.error('Error al cargar ventas:', error);
         }
+    }
+
+    async loadClientData() {
         try {
             const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/client');
-            this.clientData = response.data.data.clients; // Asigna los datos a salesData
-            console.log(response)
+            this.clientData = response.data.data.clients;
         } catch (error) {
             console.error('Error al consumir la API:', error);
         }
+    }
+
+    async loadProductData() {
         try {
             const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/product');
-            this.productsData = response.data.data.products; // Asigna los datos a salesData
-            console.log(response)
+            this.productsData = response.data.data.products;
         } catch (error) {
             console.error('Error al consumir la API:', error);
         }
+    }
+
+    async loadPatientData() {
         try {
             const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/patient');
-            this.patientsData = response.data.data.patients; // Asigna los datos a salesData
-            console.log(response)
+            this.patientsData = response.data.data.patients;
         } catch (error) {
             console.error('Error al consumir la API:', error);
         }
+    }
+
+    async loadPaymentData() {
         try {
             const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/paymenttype');
-            this.paymentData = response.data.data.paymentTypes; // Asigna los datos a salesData
-            console.log(response)
+            this.paymentData = response.data.data.paymentTypes;
         } catch (error) {
             console.error('Error al consumir la API:', error);
         }
