@@ -13,7 +13,7 @@
                     <th>Proveedor</th>
                     <th>Monto Total</th>
                     <th>Departamento</th>
-                    <th>Descripción</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -28,7 +28,7 @@
                     <td>
                         <button v-if="buy.status === 'pendiente'" class="btn btn-primary btn-sm" @click="approveBuy(buy.id)">Aprobar</button>
                         <button v-if="buy.status === 'pendiente'" class="btn btn-danger btn-sm" @click="rejectBuy(buy.id)">Rechazar</button>
-                        <button v-else class="btn btn-secondary btn-sm" @click="openEditStatusModal(buy)">Editar Estado</button>
+                        <button v-else class="btn btn-info btn-sm" @click="openEditStatusModal(buy)">Editar Estado</button>
                     </td>
                 </tr>
             </tbody>

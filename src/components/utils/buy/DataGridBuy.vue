@@ -96,7 +96,7 @@
                     <th>Proveedor</th>
                     <th>Monto Total</th>
                     <th>Departamento</th>
-                    <th>Descripción</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -329,6 +329,7 @@ export default {
         addDetailBuy() {
             if (this.newDetail.product_id && this.newDetail.quantity > 0 && this.newDetail.buy_price > 0) {
                 this.currentBuy.buy_details.push({ ...this.newDetail });
+                this.updateTotalAmount();
                 this.newDetail = { product_id: null, quantity: 0, buy_price: 0 };
             } else {
                 Swal.fire({
@@ -337,6 +338,11 @@ export default {
                     text: 'Por favor, complete todos los campos del detalle de compra'
                 });
             }
+        },
+        updateTotalAmount() {
+            this.currentBuy.amount = this.currentBuy.buy_details.reduce((total, detail) => {
+                return total + (parseFloat(detail.buy_price) * detail.quantity);
+            }, 0).toFixed(2);
         },
         statusClass(status) {
             switch (status) {
