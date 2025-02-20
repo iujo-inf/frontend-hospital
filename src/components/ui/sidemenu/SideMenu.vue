@@ -43,6 +43,11 @@
               </router-link>
             </li>
             <li>
+              <router-link class="nav-link submenu-link" to="/usuarios/clientes" exact-active-class="active">
+                <span>Clientes</span>
+              </router-link>
+            </li>
+            <li>
               <router-link class="nav-link submenu-link" to="/usuarios/proveedores" exact-active-class="active">
                 <span>Proveedores</span>
               </router-link>
@@ -231,7 +236,7 @@ export default {
   computed: {
     isInUsuariosSection() {
       const path = this.$route.path;
-      return path.startsWith("/usuarios");
+      return path.startsWith("/usuarios") || path.startsWith("/usuarios/clientes");
     },
     isInFarmaciaSection() {
       const path = this.$route.path;
@@ -273,7 +278,7 @@ export default {
         });
 
         // Activar el submenú correspondiente
-        if (path.startsWith("/usuarios")) {
+        if (path.startsWith("/usuarios") || path.startsWith("/usuarios/clientes")) {
           this.submenuStates.usuarios = true;
         } else if (path.startsWith("/citas") || path.startsWith("/cita")) {
           this.submenuStates.citas = true;

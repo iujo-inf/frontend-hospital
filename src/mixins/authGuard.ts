@@ -7,4 +7,11 @@ export default class AuthGuard extends Vue {
       router.push('/')
     }
   }
-};
+}
+
+export const authGuard = {
+  beforeRouteEnter(to: any, from: any, next: any) {
+    // Lógica del guard
+    next()
+  }
+}
