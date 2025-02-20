@@ -3,11 +3,47 @@
         <div class="grid-view">
             <input type="text" class="form-control mb-3"
                 placeholder="Buscar por RIF, Dirección o Razon Social" v-model="searchQuery" />
-            <div>
+            <div style="display: flex; gap: 10px;">
                 <button class="btn btn-primary btn-block" style="display: flex;" @click="openModal()">
                     <img src="/iconos/agregar.svg" alt="Proveedores" width="45" height="45" class="iconColor">
                     <b>Agregar Proveedor</b>
                 </button>
+                <button class="btn btn-secondary btn-block" style="display: flex;" @click="openInactiveModal()">
+                    <img src="/iconos/.svg" alt="Ver Inactivos" width="45" height="45" class="iconColor">
+                    <b>Ver Inactivos</b>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de Proveedores Inactivos -->
+        <div v-if="showInactiveModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 class="modal-title">Proveedores Inactivos</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>RIF</th>
+                            <th>Dirección</th>
+                            <th>Razón Social</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="supplier in inactiveSuppliers" :key="supplier.id">
+                            <td>{{ supplier.rif }}</td>
+                            <td>{{ supplier.address }}</td>
+                            <td>{{ supplier.business_name }}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" @click="activateSupplier(supplier.id)">
+                                    Activar
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-group button-group">
+                    <button type="button" @click="closeInactiveModal" class="btn btn-secondary btn-lg">Cerrar</button>
+                </div>
             </div>
         </div>
 
@@ -28,8 +64,8 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="businessName">Razon Social</label>
-                            <input type="text" id="businessName" v-model="currentSupplier.businessName" required class="form-control">
+                            <label for="businessName">Razón Social</label>
+                            <input type="text" id="businessName" v-model="currentSupplier.business_name" required class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="status">Estado</label>
@@ -53,16 +89,16 @@
                 <tr style="border-radius: 30px;">
                     <th>RIF</th>
                     <th>Dirección</th>
-                    <th>Razon Social</th>
+                    <th>Razón Social</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="supplier in filteredSuppliers" :key="supplier.id">
+                <tr v-for="supplier in activeFilteredSuppliers" :key="supplier.id">
                     <td>{{ supplier.rif }}</td>
                     <td>{{ supplier.address }}</td>
-                    <td>{{ supplier.businessName }}</td>
+                    <td>{{ supplier.business_name }}</td>
                     <td>{{ supplier.status ? 'Activo' : 'Inactivo' }}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" @click="editSupplier(supplier.id)">Editar</button>
@@ -75,6 +111,9 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
 export default {
     name: 'DataGridSupplier',
     data() {
@@ -86,48 +125,138 @@ export default {
                 id: null,
                 rif: '',
                 address: '',
-                businessName: '',
+                business_name: '',
                 status: true
             },
-            suppliers: [
-                { id: 1, rif: '123456789', address: 'Calle Principal 123', businessName: 'Empresa A', status: true },
-                { id: 2, rif: '987654321', address: 'Avenida Central 456', businessName: 'Empresa B', status: false },
-                { id: 3, rif: '555555555', address: 'Calle Secundaria 789', businessName: 'Empresa C', status: true },
-                { id: 4, rif: '111111111', address: 'Avenida Principal 321', businessName: 'Empresa D', status: false },
-                { id: 5, rif: '222222222', address: 'Calle Central 654', businessName: 'Empresa E', status: true },
-            ]
-
+            suppliers: [],
+            baseURL: 'https://backend-hospital-mediplus.onrender.com/api/supplier',
+            showInactiveModal: false,
         };
     },
     computed: {
         filteredSuppliers() {
             return this.suppliers.filter(supplier => {
-                const fullName = `${supplier.rif} ${supplier.address} ${supplier.businessName} ${supplier.status}`.toLowerCase();
-                return fullName.includes(this.searchQuery.toLowerCase());
+                const searchString = `${supplier.rif} ${supplier.address} ${supplier.business_name}`.toLowerCase();
+                return searchString.includes(this.searchQuery.toLowerCase());
             });
         },
-    },
-    updatedSuppliers: {
-        get() {
-            return this.suppliers.map(supplier => {
-                if (supplier.id === this.currentSupplier.id) {
-                    return { ...supplier, ...this.currentSupplier };
-                }
-                return supplier;
-            });
+        activeFilteredSuppliers() {
+            return this.filteredSuppliers.filter(supplier => supplier.status);
         },
-        set(value) {
-            this.suppliers = value;
+        inactiveSuppliers() {
+            return this.suppliers.filter(supplier => !supplier.status);
         }
     },
+    async created() {
+        await this.loadSuppliers();
+    },
     methods: {
+        async loadSuppliers() {
+            try {
+                const response = await axios.get(this.baseURL);
+                this.suppliers = response.data.data.suppliers;
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al cargar los proveedores'
+                });
+            }
+        },
+
+        async saveSupplier() {
+            try {
+                const supplierData = {
+                    rif: this.currentSupplier.rif,
+                    address: this.currentSupplier.address,
+                    business_name: this.currentSupplier.business_name
+                };
+
+                const existingSupplier = this.suppliers.find(s => 
+                    s.rif === supplierData.rif && 
+                    (!this.isEditing || s.id !== this.currentSupplier.id)
+                );
+
+                if (existingSupplier) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: 'Ya existe un proveedor con este RIF'
+                    });
+                    return;
+                }
+
+                if (this.isEditing) {
+                    await axios.put(`${this.baseURL}/${this.currentSupplier.id}`, {
+                        ...supplierData,
+                        status: this.currentSupplier.status
+                    });
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Proveedor actualizado con éxito'
+                    });
+                } else {
+                    await axios.post(this.baseURL, supplierData);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Proveedor creado con éxito'
+                    });
+                }
+                
+                await this.loadSuppliers();
+                this.closeModal();
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response?.data?.message || 'Error al guardar el proveedor'
+                });
+            }
+        },
+
+        async deleteSupplier(id) {
+            const supplier = this.suppliers.find(s => s.id === id);
+            if (!supplier) return;
+
+            const result = await Swal.fire({
+                title: '¿Está seguro?',
+                text: `¿Desea eliminar el proveedor con RIF: ${supplier.rif}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await axios.delete(`${this.baseURL}/${id}`);
+                    await this.loadSuppliers();
+                    Swal.fire(
+                        'Eliminado',
+                        `El proveedor ${supplier.rif} ha sido eliminado con éxito`,
+                        'success'
+                    );
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al eliminar el proveedor'
+                    });
+                }
+            }
+        },
+
         openModal() {
             this.isEditing = false;
             this.currentSupplier = {
                 id: null,
                 rif: '',
                 address: '',
-                businessName: '',
+                business_name: '',
                 status: true
             };
             this.showModal = true;
@@ -136,32 +265,54 @@ export default {
             this.showModal = false;
             this.isEditing = false;
         },
-        editSupplier(id) {
-            const supplierToEdit = this.suppliers.find(supplier => supplier.id === id);
-            if (supplierToEdit) {
-                this.currentSupplier = { ...supplierToEdit };
+        async editSupplier(id) {
+            try {
+                const response = await axios.get(`${this.baseURL}/${id}`);
+                const supplierData = response.data.data.supplier || response.data.data;
+                this.currentSupplier = {
+                    id: supplierData.id,
+                    rif: supplierData.rif,
+                    address: supplierData.address,
+                    business_name: supplierData.business_name,
+                    status: supplierData.status
+                };
                 this.isEditing = true;
                 this.showModal = true;
-            }
-        },
-        saveSupplier() {
-            if (this.isEditing) {
-                const index = this.suppliers.findIndex(supplier => supplier.id === this.currentSupplier.id);
-                if (index !== -1) {
-                    this.suppliers.splice(index, 1, { ...this.currentSupplier });
-                }
-            } else {
-                const newId = Math.max(...this.suppliers.map(supplier => supplier.id)) + 1;
-                this.suppliers.push({
-                    id: newId,
-                    ...this.currentSupplier
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al obtener los datos del proveedor'
                 });
             }
-            this.closeModal();
         },
-        deleteSupplier(id) {
-            if (confirm(`¿Está seguro que desea eliminar el proveedor con ID: ${id}?`)) {
-                this.suppliers = this.suppliers.filter(supplier => supplier.id !== id);
+        openInactiveModal() {
+            this.showInactiveModal = true;
+        },
+        closeInactiveModal() {
+            this.showInactiveModal = false;
+        },
+        async activateSupplier(id) {
+            try {
+                const supplier = this.suppliers.find(s => s.id === id);
+                if (supplier) {
+                    await axios.put(`${this.baseURL}/${id}`, {
+                        ...supplier,
+                        status: true
+                    });
+                    await this.loadSuppliers();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Proveedor activado con éxito'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al activar el proveedor'
+                });
             }
         }
     },
@@ -245,5 +396,14 @@ export default {
 
 .btn-secondary {
     margin-right: 10px;
+}
+
+.btn-block {
+    align-items: center;
+    padding: 5px 15px;
+}
+
+.table {
+    width: 100%;
 }
 </style>
