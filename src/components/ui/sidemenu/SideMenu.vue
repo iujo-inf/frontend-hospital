@@ -185,12 +185,48 @@
                  class="submenu-icon ms-auto" width="12" height="12">
           </a>
           <ul class="submenu" v-show="submenuStates.finanzas && isOpen">
+<<<<<<< Updated upstream
+=======
+            <li class="nav-item">
+              <a id="cont-submenu" class="nav-link submenu-link d-flex align-items-center" 
+                 href="#" 
+                 @click.prevent="toggleSubmenu('compras')"
+                 :class="{ 'active': isInComprasSection }">
+                  <span v-show="isOpen" class="ms-3">Compras</span>
+                  <img v-if="isOpen" 
+                       src="/iconos/angulo-derecho.svg"
+                       :class="{ 'submenu-icon-rotated': submenuStates.compras }" 
+                       class="submenu-icon ms-auto" 
+                       width="12"
+                       height="12">
+              </a>
+              <ul class="submenu" v-show="submenuStates.compras && isOpen">
+                  <li>
+                      <router-link class="nav-link submenu-link" 
+                                  to="/compras/solicitar-compra" 
+                                  exact-active-class="active">
+                          <span><i>Solicitar Compra</i></span>
+                      </router-link>
+                  </li>
+                  <li>
+                      <router-link class="nav-link submenu-link" 
+                                  to="/compras/solicitudes-de-compras"
+                                  exact-active-class="active">
+                          <span><i>Solicitudes de Compra</i></span>
+                      </router-link>
+                  </li>
+              </ul>
+            </li>
+>>>>>>> Stashed changes
             <li>
-              <router-link class="nav-link submenu-link" to="/ventas" exact-active-class="active">
-                <span>Ventas</span>
+              <router-link class="nav-link submenu-link" 
+                           to="/ventas" 
+                           exact-active-class="active">
+                  <span>Ventas</span>
               </router-link>
             </li>
             <li>
+<<<<<<< Updated upstream
               <router-link class="nav-link submenu-link" to="/compras" exact-active-class="active">
                 <span>Compras</span>
               </router-link>
@@ -198,6 +234,12 @@
             <li>
               <router-link class="nav-link submenu-link" to="/reportes" exact-active-class="active">
                 <span>Reportes</span>
+=======
+              <router-link class="nav-link submenu-link" 
+                           to="/reportes" 
+                           exact-active-class="active">
+                  <span>Reportes</span>
+>>>>>>> Stashed changes
               </router-link>
             </li>
           </ul>
@@ -227,6 +269,7 @@ export default {
         home: "/iconos/home.svg",
         user: "/iconos/user.svg",
       },
+<<<<<<< Updated upstream
       hoverIcons: {
         home: "/iconos_acolor/home-hover.svg",
         user: "/iconos_acolor/user-hover.svg",
@@ -295,6 +338,73 @@ export default {
                    path.startsWith("/compras") ||
                    path.startsWith("/reportes")) {
           this.submenuStates.finanzas = true;
+=======
+      isInFinanzasSection() {
+        const path = this.$route.path;
+        return path.startsWith("/finanzas") ||
+          path.startsWith("/ventas") ||
+          path.startsWith("/compras") ||
+          path.startsWith("/reportes");
+      },
+
+      isInComprasSection() {
+        const path = this.$route.path;
+        return path.startsWith("/compras/solicitar-compra") || 
+               path.startsWith("/compras/solicitudes-de-compras");
+      },
+      isInCitasSection() {
+        const path = this.$route.path;
+        return path.startsWith("/citas") || path.startsWith("/cita");
+      },
+      isInEmergenciaSection() {
+        const path = this.$route.path;
+        return path.startsWith("/emergencia");
+      },
+      isInLaboratorioSection() {
+        const path = this.$route.path;
+        return path.startsWith("/laboratorio");
+      },
+      isInAlmacenSection() {
+        const path = this.$route.path;
+        return path.startsWith("/almacen");
+      }
+    },
+    watch: {
+      $route: {
+        immediate: true,
+        handler(newRoute) {
+          const path = newRoute.path;
+          
+          // Resetear todos los estados
+          Object.keys(this.submenuStates).forEach(key => {
+            this.submenuStates[key] = false;
+          });
+
+          // Activar el submenú correspondiente
+          if (path.startsWith("/usuarios") || path.startsWith("/usuarios/clientes")) {
+            this.submenuStates.usuarios = true;
+          } else if (path.startsWith("/citas") || path.startsWith("/cita")) {
+            this.submenuStates.citas = true;
+          } else if (path.startsWith("/emergencia")) {
+            this.submenuStates.emergencia = true;
+          } else if (path.startsWith("/farmacia")) {
+            this.submenuStates.farmacia = true;
+          } else if (path.startsWith("/laboratorio")) {
+            this.submenuStates.laboratorio = true;
+          } else if (path.startsWith("/almacen")) {
+            this.submenuStates.almacen = true;
+          } else if (path.startsWith("/finanzas") ||
+            path.startsWith("/ventas") ||
+            path.startsWith("/compras") ||
+            path.startsWith("/reportes")) {
+            this.submenuStates.finanzas = true;
+            
+            // Si la ruta comienza con /compras, también abrir el submenú de compras
+            if (path.startsWith("/compras")) {
+              this.submenuStates.compras = true;
+            }
+          }
+>>>>>>> Stashed changes
         }
       }
     }
@@ -444,9 +554,40 @@ img {
   color: #2d60ff !important;
 }
 
+<<<<<<< Updated upstream
 /* Nuevo estilo para el menú padre cuando está activo */
 .nav-item .nav-link.active {
   background-color: #e8efff !important;
   color: #2d60ff !important;
 }
+=======
+  /* Nuevo estilo para el menú padre cuando está activo */
+  .nav-item .nav-link.active {
+    background-color: #e8efff !important;
+    color: #2d60ff !important;
+  }
+
+  /* Estilos para que se vea bien el submenu dentro del submenu */
+  #cont-submenu {
+    position: relative;
+    left: -1rem;
+  }
+
+  /* Agregar estilos para los submenús anidados */
+  .submenu .submenu .nav-link.active {
+    background-color: #e8efff !important;
+    color: #2d60ff !important;
+    font-weight: 500;
+  }
+
+  .submenu .nav-item .nav-link.active {
+    background-color: #e8efff !important;
+    color: #2d60ff !important;
+  }
+
+  /* Ajustar el padding para los items anidados */
+  .submenu .submenu .nav-link {
+    padding-left: 4.5rem;
+  }
+>>>>>>> Stashed changes
 </style>
