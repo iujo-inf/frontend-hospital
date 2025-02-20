@@ -10,12 +10,14 @@
 import { Options, Vue } from 'vue-class-component';
 import BaseLayout from '@/components/layouts/BaseLayout.vue';
 import DataGridSupplier from '@/components/utils/user/supplier/DataGridSupplier.vue';
+import authGuard from '@/mixins/authGuard'
 
 @Options({
     components: {
         BaseLayout,
         DataGridSupplier,
     },
+    mixins: [authGuard],
 })
 export default class UserListSupplierView extends Vue { }
 </script>
