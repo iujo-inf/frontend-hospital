@@ -103,7 +103,7 @@ export default {
                 firstName: '',
                 lastName: '',
                 birthDate: '',
-                gender: '',
+                gender: 'masculino',
                 identifier: '',
             },
             patients: [],
@@ -193,54 +193,116 @@ export default {
         },
 
         async savePatient() {
+            let patientData = null;
+
             try {
-                const patientData = {
-                    firstName: this.currentPatient.firstName,
-                    lastName: this.currentPatient.lastName,
-                    birthDate: this.currentPatient.birthDate,
-                    gender: this.currentPatient.gender,
-                    identifier: this.currentPatient.identifier,
-                };
-
-                const existingPatient = this.patients.find(p => 
-                    p.identifier === patientData.identifier && 
-                    (!this.isEditing || p.id !== this.currentPatient.id)
-                );
-
-                if (existingPatient) {
+                // Validar datos antes de enviar
+                if (!this.currentPatient.firstName || 
+                    !this.currentPatient.lastName || 
+                    !this.currentPatient.identifier ||
+                    !this.currentPatient.birthDate ||
+                    !this.currentPatient.gender) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Advertencia',
-                        text: 'Ya existe un paciente con esta cédula'
+                        title: 'Campos requeridos',
+                        text: 'Por favor complete todos los campos obligatorios'
                     });
                     return;
                 }
 
-                if (this.isEditing) {
-                    await axios.put(`${this.baseURL}/${this.currentPatient.id}`, patientData);
+                // Validar formato de cédula (solo números)
+                if (!/^\d+$/.test(this.currentPatient.identifier)) {
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Paciente actualizado con éxito'
+                        icon: 'warning',
+                        title: 'Formato inválido',
+                        text: 'La cédula debe contener solo números'
                     });
-                } else {
-                    await axios.post(this.baseURL, patientData);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Paciente creado con éxito'
-                    });
+                    return;
                 }
+
+                // Validar fecha de nacimiento
+                const birthDate = new Date(this.currentPatient.birthDate);
+                const today = new Date();
+                if (birthDate > today) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Fecha inválida',
+                        text: 'La fecha de nacimiento no puede ser futura'
+                    });
+                    return;
+                }
+
+                // Modificar la estructura de los datos para que coincida con el backend
+                patientData = {
+                    nickname: this.currentPatient.firstName.trim(),
+                    firstName: this.currentPatient.firstName.trim(),
+                    lastName: this.currentPatient.lastName.trim(),
+                    birthDate: this.formatDate(this.currentPatient.birthDate),
+                    gender: this.currentPatient.gender.toLowerCase(),
+                    identifier: this.currentPatient.identifier.trim(),
+                    type: 'patient',
+                    status: true
+                };
+
+                console.log('Datos a enviar:', patientData);
+
+                let response;
+                if (this.isEditing) {
+                    response = await axios.put(
+                        `${this.baseURL}/${this.currentPatient.id}`, 
+                        patientData
+                    );
+                } else {
+                    response = await axios.post(
+                        this.baseURL, 
+                        patientData
+                    );
+                }
+
+                console.log('Respuesta del servidor:', response.data);
                 
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: this.isEditing ? 'Paciente actualizado con éxito' : 'Paciente creado con éxito'
+                });
+
                 await this.loadPatients();
                 this.closeModal();
             } catch (error) {
+                console.error('Error completo:', error);
+                console.error('Datos que se intentaron enviar:', patientData);
+                console.error('Respuesta del servidor:', error.response?.data);
+                
+                let errorMessage = 'Error al guardar el paciente';
+                
+                if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+                    // Mostrar todos los errores del array
+                    errorMessage = error.response.data.errors
+                        .map(err => {
+                            if (typeof err === 'string') return err;
+                            return err.msg || err.message || JSON.stringify(err);
+                        })
+                        .filter(Boolean)
+                        .join('\n');
+                } else if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                }
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: error.response?.data?.message || 'Error al guardar el paciente'
+                    html: errorMessage.replace(/\n/g, '<br>'),
+                    confirmButtonText: 'Entendido'
                 });
             }
+        },
+
+        // Agregar método para formatear fecha
+        formatDate(dateString) {
+            if (!dateString) return null;
+            const date = new Date(dateString);
+            return date.toISOString().split('T')[0];
         },
 
         async deletePatient(id) {
@@ -284,7 +346,7 @@ export default {
                 firstName: '',
                 lastName: '',
                 birthDate: '',
-                gender: '',
+                gender: 'masculino',
                 identifier: '',
             };
             this.showModal = true;

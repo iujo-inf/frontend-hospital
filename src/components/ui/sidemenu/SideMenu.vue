@@ -196,7 +196,7 @@
               </router-link>
             </li>
             <li>
-              <router-link class="nav-link submenu-link" to="/finanzas/reportes" exact-active-class="active">
+              <router-link class="nav-link submenu-link" to="/reportes" exact-active-class="active">
                 <span>Reportes</span>
               </router-link>
             </li>
@@ -246,7 +246,8 @@ export default {
       const path = this.$route.path;
       return path.startsWith("/finanzas") || 
              path.startsWith("/ventas") || 
-             path.startsWith("/compras");
+             path.startsWith("/compras") ||
+             path.startsWith("/reportes");
     },
     isInCitasSection() {
       const path = this.$route.path;
@@ -269,7 +270,6 @@ export default {
     $route: {
       immediate: true,
       handler(newRoute) {
-        // Actualizar estados de submenús basado en la ruta actual
         const path = newRoute.path;
         
         // Resetear todos los estados
@@ -292,7 +292,8 @@ export default {
           this.submenuStates.almacen = true;
         } else if (path.startsWith("/finanzas") || 
                    path.startsWith("/ventas") || 
-                   path.startsWith("/compras")) {
+                   path.startsWith("/compras") ||
+                   path.startsWith("/reportes")) {
           this.submenuStates.finanzas = true;
         }
       }

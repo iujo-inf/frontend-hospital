@@ -17,7 +17,7 @@ import doctorView from '@/views/doctors/doctorview.vue'
 import homeScreenView from '@/views/homeScreen/homeScreenView.vue'
 import UserListClientView from '../views/users/UserListClientView.vue'
 import UserListPatientView from '../views/users/UserListPatientView.vue'
-import ReportView from '@/views/ReportView.vue'
+import ReportsView from '@/views/ReportsView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -86,8 +86,16 @@ const routes: Array<RouteRecordRaw> = [
   /*{
     path: '/ventas',
     name: 'ventas',
+
     component: SalesListView
+
+    component: SalesListView,
+    meta: { requiresAuth: true }
+
+  },
+
   },*/
+
   {
     path: '/compras',
     name: 'compras',
@@ -104,17 +112,12 @@ const routes: Array<RouteRecordRaw> = [
     component: FinanceView
   },
   {
-    path: '/finanzas/reportes',
-    name: 'Reportes',
-    component: ReportView,
+    path: '/reportes',
+    name: 'reportes',
+    component: ReportsView,
     meta: { 
       requiresAuth: true,
-      title: 'Reportes',
-      breadcrumb: [
-        { text: 'Inicio', href: '/' },
-        { text: 'Finanzas', href: '/finanzas' },
-        { text: 'Reportes', href: '/finanzas/reportes' }
-      ]
+      title: 'Reportes'
     }
   },
   {

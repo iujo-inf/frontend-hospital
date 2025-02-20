@@ -1,4 +1,3 @@
-
 <template>
     <div class="container mt-5">
         <div class="grid-view">
@@ -97,6 +96,8 @@
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
 export default {
     name: 'DataGridSales',
     props: {
@@ -237,54 +238,103 @@ export default {
         closeModal() {
             this.showModal = false;
             this.isEditing = false;
+            this.currentsales = {
+                id: null,
+                client_id: '',
+                product_id: '',
+                patient_id: '',
+                quantity: 1,
+                price: 0.0,
+                payment_type_id: ''
+            };
         },
         async savesales() {
             try {
-                if (this.isEditing) {
-                    // PUT request to update existing sale
-                    await axios.put(`/api/sales/${this.currentsales.id}`, this.currentsales);
-                    const index = this.localSales.findIndex(sales => sales.id === this.currentsales.id);
-                    if (index !== -1) {
-                        this.localSales.splice(index, 1, { ...this.currentsales });
-                    }
-                } else {
-                    // POST request to create new sale
-                    // {
-                    //     "patient_id": 1,
-                    //     "client_id": 1,
-                    //     "BillingDetails": [
-                    //         {
-                    //         "product_id": 1,
-                    //         "quantity": 2,
-                    //         "price": 15.50
-                    //         }
-                    //     ],
-                    //     "payment_type_id": 1
-                    // }
-                    let form = {
-                        patient_id: this.currentsales.patient_id,
-                        client_id: this.currentsales.client_id,
-                        BillingDetails: [
-                            {
-                                product_id: this.currentsales.product_id,
-                                quantity: this.currentsales.quantity,
-                                price:this.currentsales.price,
-                            }
-                        ],
-                        payment_type_id:this.currentsales.payment_type_id,
-                    }
-                    console.log(form)
-                    const response = await axios.post('https://backend-hospital-mediplus.onrender.com/api/billing', form);
-                    console.log(response)
+                // Validar datos antes de enviar
+                if (!this.currentsales.client_id || 
+                    !this.currentsales.product_id || 
+                    !this.currentsales.payment_type_id ||
+                    !this.currentsales.quantity ||
+                    !this.currentsales.price) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos requeridos',
+                        text: 'Por favor complete todos los campos obligatorios'
+                    });
+                    return;
+                }
+
+                let form = {
+                    patient_id: this.currentsales.patient_id,
+                    client_id: this.currentsales.client_id,
+                    BillingDetails: [
+                        {
+                            product_id: this.currentsales.product_id,
+                            quantity: this.currentsales.quantity,
+                            price: this.currentsales.price,
+                        }
+                    ],
+                    payment_type_id: this.currentsales.payment_type_id,
+                }
+
+                console.log('Datos a enviar:', form);
+
+                const response = await axios.post('https://backend-hospital-mediplus.onrender.com/api/billing', form);
+                console.log('Respuesta del servidor:', response.data);
+
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Venta creada con éxito',
+                    timer: 1500
+                });
+
+                // Actualizar la lista de ventas
+                if (response.data) {
+                    // Agregar la nueva venta al array local
                     this.localSales.push({
-                        id: response.data.id, // Use the ID from the server response
-                        ...this.currentsales
+                        id: response.data.id,
+                        billing_date: new Date().toISOString(),
+                        client: this.localClients.find(c => c.id === this.currentsales.client_id),
+                        num_fact: response.data.num_fact || '',
+                        sale: {
+                            amount: this.currentsales.price * this.currentsales.quantity
+                        },
+                        billing_status: 'Completado'
                     });
                 }
+
+                // Cerrar el modal y limpiar el formulario
                 this.closeModal();
+
+                // Emitir evento para actualizar la vista padre si es necesario
+                this.$emit('sale-added');
+
             } catch (error) {
-                console.error('Error saving sale:', error);
-                // Here you might want to add error handling, like showing a notification
+                console.error('Error completo:', error);
+                console.error('Respuesta del servidor:', error.response?.data);
+                
+                let errorMessage = 'Error al guardar la venta';
+                
+                if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+                    errorMessage = error.response.data.errors
+                        .map(err => {
+                            if (typeof err === 'string') return err;
+                            return err.msg || err.message || JSON.stringify(err);
+                        })
+                        .filter(Boolean)
+                        .join('\n');
+                } else if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    html: errorMessage.replace(/\n/g, '<br>'),
+                    confirmButtonText: 'Entendido'
+                });
             }
         },
     },
