@@ -18,12 +18,12 @@
         <!-- Modal de Pacientees Inactivos -->
         <div v-if="showInactiveModal" class="modal-overlay">
             <div class="modal-content">
-                <h2 class="modal-title">Pacientes activos</h2>
+                <h2 class="modal-title">Pacientes inactivos</h2>
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Identificación</th>
-                            <th>Nombre x</th>
+                            <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Apodo</th>
                             <th>Fecha Nacimiento</th>
@@ -85,7 +85,7 @@
                         </div>
                         <div class="form-group">
                             <label for="status">Género</label>
-                            <select id="status" v-model="currentPatient.status" required class="form-control">
+                            <select id="status" v-model="currentPatient.gender" required class="form-control">
                                 <option value=male>Masculino</option>
                                 <option value=fermale>Femenino</option>
                                 <option value=non-binary>No binario</option>
@@ -105,7 +105,7 @@
             <thead>
                 <tr style="border-radius: 30px;">
                     <th>Identificación</th>
-                    <th>Nombre y</th>
+                    <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Apodo</th>
                     <th>Fecha Nacimiento</th>
@@ -121,8 +121,7 @@
                     <td>{{ patient.nickname }}</td>
                     <td>{{ patient.birthDate  }}</td>
                     <td>{{ patient.gender.toLowerCase() }}</td>
-                    <td>{{ patient.deletedAt ? 'Activo' : 'Inactivo' }}</td>
-                    <!--<td>{{ patient.status ? 'Activo' : 'Inactivo' }}</td>-->
+                    <td>{{ patient.deletedAt ? 'Inactivo' : 'Activo' }}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" @click="editPatient(patient.id)">Editar</button>
                         <button class="btn btn-danger btn-sm" @click="deletePatient(patient.id)">Eliminar</button>
@@ -167,7 +166,7 @@ export default {
             return this.filteredPatients.filter(patient => !patient.deletedAt);
         },
         inactivePatients() {
-            return this.patients.filter(patient => patient.deletedAt && patient.delete_all === null);
+            return this.patients.filter(patient => patient.deletedAt);
         }
     },
     async created() {
@@ -178,12 +177,23 @@ export default {
             try {
                 const response = await axios.get(this.baseURL);
                 console.log(response.data.data.patients)
+                /*
+                const formattedPatients = response.data.data.patients.map(patient => ({
+                    identifier: patient.identifier,
+                    firstName: patient.firstName,
+                    lastName: patient.lastName,
+                    nickname: patient.nickname,
+                    birthDate: new Date(patient.birthDate).toLocaleDateString('es-ES'),
+                    gender: patient.gender.toLowerCase(),
+                    deletedAt: patient.deletedAt,
+                }));*/
+
                 this.patients = response.data.data.patients;
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error al cargar los proveedores'
+                    text: 'Error al cargar los pacientees'
                 });
             }
         },
@@ -191,13 +201,16 @@ export default {
         async savePatient() {
             try {
                 const patientData = {
-                    rif: this.currentPatient.rif,
-                    address: this.currentPatient.address,
-                    business_name: this.currentPatient.business_name
+                    identifier : this.currentPatient.identifier,
+                    firstName : this.currentPatient.firstName,
+                    lastName : this.currentPatient.lastName,
+                    nickname : this.currentPatient.nickname,
+                    birthDate : this.currentPatient.birthDate,
+                    gender: this.currentPatient.gender
                 };
 
                 const existingPatient = this.patients.find(s => 
-                    s.rif === patientData.rif && 
+                    s.identifier === patientData.identifier && 
                     (!this.isEditing || s.id !== this.currentPatient.id)
                 );
 
@@ -205,7 +218,7 @@ export default {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Advertencia',
-                        text: 'Ya existe un proveedor con este RIF'
+                        text: 'Ya existe un paciente con esta identificación'
                     });
                     return;
                 }
@@ -232,10 +245,11 @@ export default {
                 await this.loadPatients();
                 this.closeModal();
             } catch (error) {
+                console.log(error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: error.response?.data?.message || 'Error al guardar el proveedor'
+                    text: error.response?.data?.message || 'Error al guardar el paciente'
                 });
             }
         },
@@ -246,7 +260,7 @@ export default {
 
             const result = await Swal.fire({
                 title: '¿Está seguro?',
-                text: `¿Desea eliminar el proveedor con RIF: ${patient.rif}?`,
+                text: `¿Desea eliminar el paciente con identificacion: ${patient.identifier}?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -261,14 +275,14 @@ export default {
                     await this.loadPatients();
                     Swal.fire(
                         'Eliminado',
-                        `El proveedor ${patient.rif} ha sido eliminado con éxito`,
+                        `El paciente ${patient.identifier} ha sido eliminado con éxito`,
                         'success'
                     );
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Error al eliminar el proveedor'
+                        text: 'Error al eliminar el paciente'
                     });
                 }
             }
@@ -277,11 +291,13 @@ export default {
         openModal() {
             this.isEditing = false;
             this.currentPatient = {
-                id: null,
-                rif: '',
-                address: '',
-                business_name: '',
-                status: true
+                identifier : null,
+                firstName : "",
+                lastName : "",
+                nickname : "",
+                birthDate : "",
+                gender:"",
+                deletedAt:null
             };
             this.showModal = true;
         },
@@ -294,28 +310,21 @@ export default {
                 const response = await axios.get(`${this.baseURL}/${id}`);
                 const patientData = response.data.data.patient || response.data.data;
                 this.currentPatient = {
-                    id: patientData.id,
-                    nickname: patientData.rif,
-                    firstName: patientData.address,
-                    business_name: patientData.business_name,
-                    status: patientData.status
+                    identifier : patientData.identifier,
+                    firstName : patientData.firstName,
+                    lastName : patientData.lastName,
+                    nickname : patientData.nickname,
+                    birthDate : patientData.birthDate,
+                    gender: patientData.gender,
+                    deletedAt:patientData.deletedAt
                 };
-
-                /**
-                 "nickname": "Jhei",
-                "firstName": "Jheilyn",
-                "lastName": "Ramirez",
-                "birthDate": "1996-02-12T00:00:00.000Z",
-                "gender": "Female",
-                "identifier": "1234567891",
-                 */
                 this.isEditing = true;
                 this.showModal = true;
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error al obtener los datos del proveedor'
+                    text: 'Error al obtener los datos del paciente'
                 });
             }
         },
@@ -331,6 +340,7 @@ export default {
                 if (patient) {
                     await axios.put(`${this.baseURL}/${id}`, {
                         ...patient,
+                        deletedAt: null,
                         status: true
                     });
                     await this.loadPatients();
@@ -344,7 +354,7 @@ export default {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error al activar el proveedor'
+                    text: 'Error al activar el paciente'
                 });
             }
         }
