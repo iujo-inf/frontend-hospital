@@ -38,7 +38,7 @@ import BaseLayout from '@/components/layouts/BaseLayout.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import authGuard from '@/mixins/authGuard';
-import moment from 'moment';
+//import moment from 'moment';
 
 @Options({
     components: {
