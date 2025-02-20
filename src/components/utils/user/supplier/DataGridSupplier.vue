@@ -75,9 +75,22 @@
 </template>
 
 <script>
+//import { ref, onMounted } from 'vue';
+import { ChargeService } from '@/components/core/services';
+//import { ChargeInterface } from '@/components/core/interfaces';
+const chargeService = new ChargeService();
 export default {
     name: 'DataGridSupplier',
     data() {
+        let supplierss=[];
+        chargeService.getAllChargeAxios().then(response => {
+            console.log("-----------------");
+            supplierss=response.data
+            console.log(supplierss,response.message,response.status);
+        }).catch(error => {
+            console.log("-----------------");
+            console.log(error);
+        });
         return {
             searchQuery: '',
             showModal: false,
@@ -96,7 +109,6 @@ export default {
                 { id: 4, rif: '111111111', address: 'Avenida Principal 321', businessName: 'Empresa D', status: false },
                 { id: 5, rif: '222222222', address: 'Calle Central 654', businessName: 'Empresa E', status: true },
             ]
-
         };
     },
     computed: {
