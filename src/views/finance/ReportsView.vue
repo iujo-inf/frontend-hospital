@@ -3,16 +3,6 @@
         <BaseLayout page-title="Finanzas > Reportes">
             <div class="container mt-5">
                 <h5>Libro Diario, Estado de Cuenta, Balance General</h5>
-                
-                <!-- Información de rango de fechas -->
-                <div class="date-range-info alert alert-info mb-4" v-if="dateRange.start && dateRange.end">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <span>Registros disponibles desde: 
-                        <strong>{{ formatDate(dateRange.start) }}</strong> 
-                        hasta: 
-                        <strong>{{ formatDate(dateRange.end) }}</strong>
-                    </span>
-                </div>
 
                 <form @submit.prevent="generateReport">
                     <div class="form-container">
@@ -21,8 +11,6 @@
                             <input type="date" 
                                    id="time1" 
                                    v-model="dates.startDate" 
-                                   :min="dateRange.start"
-                                   :max="dateRange.end"
                                    required 
                                    class="form-control input-time">
                         </div>
@@ -31,8 +19,6 @@
                             <input type="date" 
                                    id="time2" 
                                    v-model="dates.endDate" 
-                                   :min="dateRange.start"
-                                   :max="dateRange.end"
                                    required 
                                    class="form-control input-time">
                         </div>
@@ -41,40 +27,6 @@
                         </button>
                     </div>
                 </form>
-
-                <!-- Tabla de resultados -->
-                <div class="mt-4" v-if="reportData.length > 0">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Descripción</th>
-                                    <th>Debe</th>
-                                    <th>Haber</th>
-                                    <th>Balance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(item, index) in reportData" :key="index">
-                                    <td>{{ formatDate(item.date) }}</td>
-                                    <td>{{ item.description }}</td>
-                                    <td>{{ formatCurrency(item.debit) }}</td>
-                                    <td>{{ formatCurrency(item.credit) }}</td>
-                                    <td>{{ formatCurrency(item.balance) }}</td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-info">
-                                    <td colspan="2"><strong>Totales</strong></td>
-                                    <td><strong>{{ formatCurrency(totalDebit) }}</strong></td>
-                                    <td><strong>{{ formatCurrency(totalCredit) }}</strong></td>
-                                    <td><strong>{{ formatCurrency(finalBalance) }}</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
             </div>
         </BaseLayout> 
     </div>
@@ -86,6 +38,7 @@ import BaseLayout from '@/components/layouts/BaseLayout.vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import authGuard from '@/mixins/authGuard';
+import moment from 'moment';
 
 @Options({
     components: {
@@ -99,57 +52,7 @@ export default class ReportsView extends Vue {
         endDate: '',
     };
 
-    dateRange = {
-        start: '',
-        end: ''
-    };
-
-    reportData: any[] = [];
     isLoading = false;
-
-    get totalDebit(): number {
-        return this.reportData.reduce((sum, item) => sum + (item.debit || 0), 0);
-    }
-
-    get totalCredit(): number {
-        return this.reportData.reduce((sum, item) => sum + (item.credit || 0), 0);
-    }
-
-    get finalBalance(): number {
-        return this.totalDebit - this.totalCredit;
-    }
-
-    async created() {
-        await this.getDateRange();
-    }
-
-    async getDateRange() {
-        try {
-            const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/journal/dates', {
-                headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-                }
-            });
-
-            const { minDate, maxDate } = response.data.data;
-
-            // Establecer fechas mínimas y máximas
-            this.dateRange.start = minDate;
-            this.dateRange.end = maxDate;
-            
-            // Establecer fechas por defecto
-            this.dates.startDate = minDate;
-            this.dates.endDate = maxDate;
-
-        } catch (error: any) {
-            console.error('Error al obtener el rango de fechas:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Error al obtener el rango de fechas'
-            });
-        }
-    }
 
     async generateReport() {
         if (!this.dates.startDate || !this.dates.endDate) {
@@ -204,21 +107,6 @@ export default class ReportsView extends Vue {
             this.isLoading = false;
         }
     }
-
-    formatDate(date: string): string {
-        return new Date(date).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-
-    formatCurrency(amount: number): string {
-        return new Intl.NumberFormat('es-VE', {
-            style: 'currency',
-            currency: 'VES'
-        }).format(amount || 0);
-    }
 }
 </script>
 
@@ -247,35 +135,5 @@ export default class ReportsView extends Vue {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
-}
-
-.table {
-    margin-top: 20px;
-}
-
-.table th, .table td {
-    vertical-align: middle;
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
-
-.date-range-info {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border-radius: 8px;
-    background-color: #e8f4ff;
-    border: 1px solid #b8daff;
-    color: #004085;
-}
-
-.date-range-info i {
-    font-size: 1.2rem;
-}
-
-.date-range-info strong {
-    color: #002752;
 }
 </style>
