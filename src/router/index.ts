@@ -83,11 +83,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'productos',
     component: StoreProductsListView
   },
-  {
+  /*{
     path: '/ventas',
     name: 'ventas',
     component: SalesListView
-  },
+  },*/
   {
     path: '/compras',
     name: 'compras',
