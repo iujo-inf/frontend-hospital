@@ -176,35 +176,15 @@
                 <span>Ventas</span>
               </router-link>
             </li>
-            <li class="nav-item">
-              <a class="nav-link submenu-link d-flex align-items-center" 
-                 href="#" 
-                 @click.prevent="toggleSubmenu('compras')"
-                 :class="{ 'active': isInComprasSection }">
-                <span>Compras</span>
-                <img v-if="isOpen" 
-                     src="/iconos/angulo-derecho.svg"
-                     :class="{ 'submenu-icon-rotated': submenuStates.compras }" 
-                     class="submenu-icon ms-auto" 
-                     width="12" 
-                     height="12">
-              </a>
-              <ul class="submenu nested-submenu" v-show="submenuStates.compras && isOpen">
-                <li>
-                  <router-link class="nav-link submenu-link" 
-                              to="/compras/solicitar-compra" 
-                              exact-active-class="active">
-                    <span>Solicitar Compra</span>
-                  </router-link>
-                </li>
-                <li>
-                  <router-link class="nav-link submenu-link" 
-                              to="/compras/solicitudes-de-compras" 
-                              exact-active-class="active">
-                    <span>Solicitudes de Compra</span>
-                  </router-link>
-                </li>
-              </ul>
+            <li>
+              <router-link class="nav-link submenu-link" to="/compras/solicitar-compra" exact-active-class="active">
+                <span>Solicitar Compra</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link class="nav-link submenu-link" to="/compras/solicitudes-de-compras" exact-active-class="active">
+                <span>Solicitudes de Compra</span>
+              </router-link>
             </li>
             <li>
               <router-link class="nav-link submenu-link" to="/reportes" exact-active-class="active">
@@ -233,7 +213,6 @@ export default {
         laboratorio: false,
         almacen: false,
         finanzas: false,
-        compras: false,
       },
       currentIcons: {
         home: "/iconos/home.svg",
@@ -276,10 +255,6 @@ export default {
     isInAlmacenSection() {
       const path = this.$route.path;
       return path.startsWith("/almacen");
-    },
-    isInComprasSection() {
-      const path = this.$route.path;
-      return path.startsWith("/compras");
     }
   },
   watch: {
