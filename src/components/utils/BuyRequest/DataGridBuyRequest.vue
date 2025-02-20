@@ -3,90 +3,7 @@
         <div class="grid-view">
             <input type="text" class="form-control mb-3" placeholder="Buscar por Fecha, Proveedor, N° de Orden"
                 v-model="searchQuery" />
-            <div>
-                <button class="btn btn-primary btn-block" style="display: flex;" @click="openModal()">
-                    <img src="/iconos/agregar.svg" alt="Compras" width="45" height="45" class="iconColor">
-                    <b>Solicitar Compra</b>
-                </button>
-            </div>
         </div>
-
-        <!---------------- Modal Agregar/Editar Compra ---------------->
-        <div v-if="showModal" class="modal-overlay">
-            <div class="modal-content">
-                <h2 class="modal-title">{{ isEditing ? 'Editar' : 'Agregar' }} Compra</h2>
-                <form @submit.prevent="saveBuy">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="date">Fecha</label>
-                            <input type="date" id="date" v-model="currentBuy.date" required class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="invoiceNumber">N° de Orden</label>
-                            <input type="text" id="invoiceNumber" v-model="currentBuy.invoiceNumber" required
-                                class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="supplier">Proveedor</label>
-                            <select id="supplier" v-model="currentBuy.supplier" required class="form-control">
-                                <option v-for="supplier in uniqueSuppliers" :key="supplier.id" :value="supplier">
-                                    {{ supplier.business_name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="amount">Monto Total</label>
-                            <input type="number" id="amount" v-model="currentBuy.amount" required class="form-control"
-                                onkeypress="return event.charCode != 101 && event.charCode != 69 && event.charCode != 46;"
-                                readonly>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="department">Departamento</label>
-                            <select id="department" v-model="currentBuy.department" required class="form-control">
-                                <option v-for="department in uniqueDepartments" :key="department.id"
-                                    :value="department">
-                                    {{ department.department_name }}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="product">Producto</label>
-                            <select id="product" v-model="newDetail.product_id" required class="form-control">
-                                <option v-for="product in uniqueProducts" :key="product.id" :value="product.id">
-                                    {{ product.name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="quantity">Cantidad</label>
-                            <input type="number" id="quantity" v-model="newDetail.quantity" required
-                                class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="buyPrice">Precio de Compra</label>
-                            <input type="number" id="buyPrice" v-model="newDetail.buy_price" required
-                                class="form-control">
-                        </div>
-                        <button type="button" @click="addDetailBuy" class="btn btn-outline-primary" style="margin: 1rem;">Agregar Detalle</button>
-                    </div>
-                    <div class="form-group button-group">
-                        <button type="button" @click="closeModal" class="btn btn-secondary btn-lg">Cancelar</button>
-                        <button type="submit" class="btn btn-primary btn-lg" @click.prevent="confirmUpdate">
-                            {{ isEditing ? 'Actualizar' : 'Guardar' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!---------------- Modal Agregar/Editar Compra ---------------->
 
         <table class="table table-hover">
             <thead>
@@ -109,12 +26,34 @@
                     <td>{{ buy.departament.department_name }}</td>
                     <td><span :class="statusClass(buy.status)">{{ buy.status }}</span></td>
                     <td>
-                        <button class="btn btn-primary btn-sm" @click="editBuy(buy.id)">Editar</button>
-                        <button class="btn btn-danger btn-sm" @click="deleteBuy(buy.id)">Eliminar</button>
+                        <button v-if="buy.status === 'pendiente'" class="btn btn-primary btn-sm" @click="approveBuy(buy.id)">Aprobar</button>
+                        <button v-if="buy.status === 'pendiente'" class="btn btn-danger btn-sm" @click="rejectBuy(buy.id)">Rechazar</button>
+                        <button v-else class="btn btn-secondary btn-sm" @click="openEditStatusModal(buy)">Editar Estado</button>
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        <!-- Modal para editar el estado de la compra -->
+        <div v-if="showEditStatusModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 class="modal-title">Editar Estado de Compra</h2>
+                <form @submit.prevent="updateBuyStatus">
+                    <div class="form-group">
+                        <label for="status">Estado</label>
+                        <select id="status" v-model="currentBuy.status" class="form-control">
+                            <option value="aprobada">Aprobada</option>
+                            <option value="rechazada">Rechazada</option>
+                            <option value="pendiente">Pendiente</option>
+                        </select>
+                    </div>
+                    <div class="form-group button-group">
+                        <button type="button" @click="closeEditStatusModal" class="btn btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -128,6 +67,7 @@ export default {
         return {
             searchQuery: '',
             showModal: false,
+            showEditStatusModal: false,
             isEditing: false,
             currentBuy: {
                 id: null,
@@ -136,7 +76,8 @@ export default {
                 supplier: '',
                 amount: 0,
                 department: null,
-                buy_details: []
+                buy_details: [],
+                status: ''
             },
             newDetail: {
                 product_id: null,
@@ -201,7 +142,8 @@ export default {
                 supplier: '',
                 amount: 0,
                 department: null,
-                buy_details: []
+                buy_details: [],
+                status: ''
             };
             this.showModal = true;
         },
@@ -209,86 +151,59 @@ export default {
             this.showModal = false;
             this.isEditing = false;
         },
-        editBuy(id) {
-            const buyToEdit = this.buys.find(buy => buy.id === id);
-            if (buyToEdit) {
-                this.currentBuy = {
-                    ...buyToEdit,
-                    invoiceNumber: buyToEdit.invoice_number,
-                    amount: this.calculateTotalAmount(buyToEdit)
-                };
-                this.isEditing = true;
-                this.showModal = true;
-            }
+        openEditStatusModal(buy) {
+            this.currentBuy = { ...buy };
+            this.showEditStatusModal = true;
         },
-        confirmUpdate() {
-            if (confirm(`¿Está seguro que desea ${this.isEditing ? 'actualizar' : 'guardar'} esta compra?`)) {
-                this.saveBuy();
-            }
+        closeEditStatusModal() {
+            this.showEditStatusModal = false;
         },
-        async saveBuy() {
-            try {
-                const buyData = {
-                    invoice_number: this.currentBuy.invoiceNumber,
-                    date: this.currentBuy.date,
-                    supplier_id: this.currentBuy.supplier.id,
-                    department_id: this.currentBuy.department.id,
-                    status: 'pendiente',
-                    buy_details: this.currentBuy.buy_details
-                };
-
-                const existingBuy = this.buys.find(b =>
-                    b.invoice_number === buyData.invoice_number &&
-                    (!this.isEditing || b.id !== this.currentBuy.id)
-                );
-
-                if (existingBuy) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Advertencia',
-                        text: 'Ya existe una compra con este número de factura'
-                    });
-                    return;
-                }
-
-                if (this.isEditing) {
-                    await axios.put(`${this.baseURL}/${this.currentBuy.id}`, buyData);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Compra actualizada con éxito'
-                    });
-                } else {
-                    await axios.post(this.baseURL, buyData);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Compra creada con éxito'
-                    });
-                }
-
-                await this.loadBuys();
-                this.closeModal();
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.response?.data?.message || 'Error al guardar la compra'
-                });
-            }
-        },
-        async deleteBuy(id) {
+        async approveBuy(id) {
             const buy = this.buys.find(b => b.id === id);
             if (!buy) return;
 
             const result = await Swal.fire({
                 title: '¿Está seguro?',
-                text: `¿Desea eliminar la compra con N° de Orden ${buy.invoice_number}?`,
+                text: `¿Desea aprobar la compra con N° de Orden ${buy.invoice_number}?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar',
+                confirmButtonText: 'Sí, aprobar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await axios.put(`${this.baseURL}/${id}`, { status: 'aprobada' });
+                    await this.loadBuys();
+                    Swal.fire(
+                        'Aprobada',
+                        `La compra con N° de Orden ${buy.invoice_number} ha sido aprobada con éxito`,
+                        'success'
+                    );
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al aprobar la compra'
+                    });
+                }
+            }
+        },
+        
+        async rejectBuy(id) {
+            const buy = this.buys.find(b => b.id === id);
+            if (!buy) return;
+
+            const result = await Swal.fire({
+                title: '¿Está seguro?',
+                text: `¿Desea rechazar la compra con N° de Orden ${buy.invoice_number}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, rechazar',
                 cancelButtonText: 'Cancelar'
             });
 
@@ -297,17 +212,35 @@ export default {
                     await axios.delete(`${this.baseURL}/${id}`);
                     await this.loadBuys();
                     Swal.fire(
-                        'Eliminado',
-                        `La compra con N° de Orden ${buy.invoice_number} ha sido eliminada con éxito`,
+                        'Rechazado',
+                        `La compra con N° de Orden ${buy.invoice_number} ha sido rechazada con éxito`,
                         'success'
                     );
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Error al eliminar la compra'
+                        text: 'Error al rechazar la compra'
                     });
                 }
+            }
+        },
+        async updateBuyStatus() {
+            try {
+                await axios.put(`${this.baseURL}/${this.currentBuy.id}`, { status: this.currentBuy.status });
+                await this.loadBuys();
+                this.closeEditStatusModal();
+                Swal.fire(
+                    'Actualizado',
+                    `El estado de la compra con N° de Orden ${this.currentBuy.invoice_number} ha sido actualizado con éxito`,
+                    'success'
+                );
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al actualizar el estado de la compra'
+                });
             }
         },
         getCurrentDate() {
@@ -439,6 +372,7 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
 .status {
     display: inline-block;
     padding: 5px 15px;

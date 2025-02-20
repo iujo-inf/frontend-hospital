@@ -1,7 +1,7 @@
 <template>
-    <div class="BuyList">
-        <BaseLayout page-title="Solicitar Compras">
-            <DataGridBuy />
+    <div class="BuyListRequest">
+        <BaseLayout page-title="Solicitudes de Compras">
+            <DataGridBuyRequest />
         </BaseLayout>
     </div>
 </template>
@@ -9,12 +9,12 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import BaseLayout from '@/components/layouts/BaseLayout.vue';
-import DataGridBuy from '@/components/utils/buy/DataGridBuy.vue';
+import DataGridBuyRequest from '@/components/utils/BuyRequest/DataGridBuyRequest.vue';
 
 @Options({
     components: {
         BaseLayout,
-        DataGridBuy,
+        DataGridBuyRequest,
     },
 })
 export default class BuyListView extends Vue { }
