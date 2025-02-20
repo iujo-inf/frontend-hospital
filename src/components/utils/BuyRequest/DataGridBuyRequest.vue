@@ -175,18 +175,33 @@ export default {
 
             if (result.isConfirmed) {
                 try {
-                    await axios.put(`${this.baseURL}/${id}`, { status: 'aprobada' });
+                    // Preparar los datos para la actualización
+                    const buyData = {
+                        invoice_number: buy.invoice_number,
+                        date: buy.date,
+                        supplier_id: buy.supplier.id,
+                        department_id: buy.departament.id,
+                        status: 'aprobada',
+                        buy_details: buy.buy_details
+                    };
+
+                    await axios.put(`${this.baseURL}/${id}`, buyData);
                     await this.loadBuys();
-                    Swal.fire(
-                        'Aprobada',
-                        `La compra con N° de Orden ${buy.invoice_number} ha sido aprobada con éxito`,
-                        'success'
-                    );
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Aprobada',
+                        text: `La compra con N° de Orden ${buy.invoice_number} ha sido aprobada con éxito`,
+                        timer: 1500
+                    });
                 } catch (error) {
+                    console.error('Error al aprobar:', error);
+                    console.error('Respuesta del servidor:', error.response?.data);
+                    
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Error al aprobar la compra'
+                        text: error.response?.data?.message || 'Error al aprobar la compra'
                     });
                 }
             }
@@ -209,18 +224,33 @@ export default {
 
             if (result.isConfirmed) {
                 try {
-                    await axios.delete(`${this.baseURL}/${id}`);
+                    // Preparar los datos para la actualización
+                    const buyData = {
+                        invoice_number: buy.invoice_number,
+                        date: buy.date,
+                        supplier_id: buy.supplier.id,
+                        department_id: buy.departament.id,
+                        status: 'rechazada',
+                        buy_details: buy.buy_details
+                    };
+
+                    await axios.put(`${this.baseURL}/${id}`, buyData);
                     await this.loadBuys();
-                    Swal.fire(
-                        'Rechazado',
-                        `La compra con N° de Orden ${buy.invoice_number} ha sido rechazada con éxito`,
-                        'success'
-                    );
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Rechazada',
+                        text: `La compra con N° de Orden ${buy.invoice_number} ha sido rechazada con éxito`,
+                        timer: 1500
+                    });
                 } catch (error) {
+                    console.error('Error al rechazar:', error);
+                    console.error('Respuesta del servidor:', error.response?.data);
+                    
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Error al rechazar la compra'
+                        text: error.response?.data?.message || 'Error al rechazar la compra'
                     });
                 }
             }
