@@ -47,16 +47,13 @@
                 <span>Proveedores</span>
               </router-link>
             </li>
-            <li>
-              <router-link class="nav-link submenu-link" to="/usuarios/clientes" exact-active-class="active">
-                <span>Clientes</span>
-              </router-link>
-            </li>
           </ul>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('citas')">
+          <a class="nav-link d-flex align-items-center" href="#" 
+             @click.prevent="toggleSubmenu('citas')"
+             :class="{ 'active': isInCitasSection }">
             <img src="/iconos/calendar-clock.svg" alt="Citas" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Citas</span>
             <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
@@ -78,7 +75,9 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('emergencia')">
+          <a class="nav-link d-flex align-items-center" href="#" 
+             @click.prevent="toggleSubmenu('emergencia')"
+             :class="{ 'active': isInEmergenciaSection }">
             <img src="/iconos/ambulancia.svg" alt="Emergencia" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Emergencia</span>
             <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
@@ -124,7 +123,9 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('laboratorio')">
+          <a class="nav-link d-flex align-items-center" href="#" 
+             @click.prevent="toggleSubmenu('laboratorio')"
+             :class="{ 'active': isInLaboratorioSection }">
             <img src="/iconos/tubo-de-analisis-de-sangre-alt.svg" alt="Laboratorio" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Laboratorio</span>
             <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
@@ -146,7 +147,9 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" href="#" @click.prevent="toggleSubmenu('almacen')">
+          <a class="nav-link d-flex align-items-center" href="#" 
+             @click.prevent="toggleSubmenu('almacen')"
+             :class="{ 'active': isInAlmacenSection }">
             <img src="/iconos/plataforma-rodante-alternativa.svg" alt="Almacén" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Almacén</span>
             <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
@@ -163,44 +166,37 @@
                   <span>Productos</span>
               </router-link>
             </li>
-            <li>
-              <router-link class="nav-link submenu-link" to="/almacen/movimientos" exact-active-class="active">
-                <span>Entradas/Salidas</span>
-              </router-link>
-            </li>
           </ul>
         </li>
 
         <li class="nav-item">
-          <router-link class="nav-link d-flex align-items-center" to="/compras" exact-active-class="active">
-            <img src="/iconos/carrito-de-compras.svg" alt="Compras" width="17" height="17" class="iconColor">
-            <span v-show="isOpen" class="ms-3">Compras</span>
-          </router-link>
+          <a class="nav-link d-flex align-items-center" href="#" 
+             @click.prevent="toggleSubmenu('finanzas')"
+             :class="{ active: isInFinanzasSection }">
+            <img src="/iconos/mano-sosteniendo-usd.svg" alt="Finanzas" width="17" height="17" class="iconColor">
+            <span v-show="isOpen" class="ms-3">Finanzas</span>
+            <img v-if="isOpen" src="/iconos/angulo-derecho.svg"
+                 :class="{ 'submenu-icon-rotated': submenuStates.finanzas }" 
+                 class="submenu-icon ms-auto" width="12" height="12">
+          </a>
+          <ul class="submenu" v-show="submenuStates.finanzas && isOpen">
+            <li>
+              <router-link class="nav-link submenu-link" to="/ventas" exact-active-class="active">
+                <span>Ventas</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link class="nav-link submenu-link" to="/compras" exact-active-class="active">
+                <span>Compras</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link class="nav-link submenu-link" to="/finanzas/reportes" exact-active-class="active">
+                <span>Reportes</span>
+              </router-link>
+            </li>
+          </ul>
         </li>
-
-        <li class="nav-item">
-          <router-link class="nav-link d-flex align-items-center" to="/ventas" exact-active-class="active">
-            <img src="/iconos/factura-punto-de-venta.svg" alt="Ventas" width="17" height="17" class="iconColor">
-            <span v-show="isOpen" class="ms-3">Ventas</span>
-          </router-link>
-        </li>
-
-        <li class="nav-item">
-          <router-link class="nav-link d-flex align-items-center" to="/facturacion" exact-active-class="active">
-            <img src="/iconos/factura-punto-de-venta.svg" alt="Facturación" width="17" height="17" class="iconColor">
-            <span v-show="isOpen" class="ms-3">Facturación</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link 
-              class="nav-link d-flex align-items-center" 
-              to="/finanzas/resumen"
-              exact-active-class="active"
-          >
-              <img src="/iconos/mano-sosteniendo-usd.svg" alt="Citas" width="17" height="17" class="iconColor">
-              <span v-show="isOpen" class="ms-3">Finanzas</span>
-          </router-link>
-      </li>
       </ul>
       <slot></slot>
     </div>
@@ -220,6 +216,7 @@ export default {
         farmacia: false,
         laboratorio: false,
         almacen: false,
+        finanzas: false,
       },
       currentIcons: {
         home: "/iconos/home.svg",
@@ -233,24 +230,68 @@ export default {
   },
   computed: {
     isInUsuariosSection() {
-      return this.$route.path.startsWith("/usuarios");
+      const path = this.$route.path;
+      return path.startsWith("/usuarios");
     },
     isInFarmaciaSection() {
-      return this.$route.path.startsWith("/farmacia");
+      const path = this.$route.path;
+      return path.startsWith("/farmacia");
     },
+    isInFinanzasSection() {
+      const path = this.$route.path;
+      return path.startsWith("/finanzas") || 
+             path.startsWith("/ventas") || 
+             path.startsWith("/compras");
+    },
+    isInCitasSection() {
+      const path = this.$route.path;
+      return path.startsWith("/citas") || path.startsWith("/cita");
+    },
+    isInEmergenciaSection() {
+      const path = this.$route.path;
+      return path.startsWith("/emergencia");
+    },
+    isInLaboratorioSection() {
+      const path = this.$route.path;
+      return path.startsWith("/laboratorio");
+    },
+    isInAlmacenSection() {
+      const path = this.$route.path;
+      return path.startsWith("/almacen");
+    }
   },
   watch: {
     $route: {
       immediate: true,
       handler(newRoute) {
-        this.submenuStates.usuarios = newRoute.path.startsWith("/usuarios");
-        this.submenuStates.citas = newRoute.path.startsWith("/citas");
-        this.submenuStates.emergencia = newRoute.path.startsWith("/emergencia");
-        this.submenuStates.farmacia = newRoute.path.startsWith("/farmacia");
-        this.submenuStates.laboratorio = newRoute.path.startsWith("/laboratorio");
-        this.submenuStates.almacen = newRoute.path.startsWith("/almacen");
-      },
-    },
+        // Actualizar estados de submenús basado en la ruta actual
+        const path = newRoute.path;
+        
+        // Resetear todos los estados
+        Object.keys(this.submenuStates).forEach(key => {
+          this.submenuStates[key] = false;
+        });
+
+        // Activar el submenú correspondiente
+        if (path.startsWith("/usuarios")) {
+          this.submenuStates.usuarios = true;
+        } else if (path.startsWith("/citas") || path.startsWith("/cita")) {
+          this.submenuStates.citas = true;
+        } else if (path.startsWith("/emergencia")) {
+          this.submenuStates.emergencia = true;
+        } else if (path.startsWith("/farmacia")) {
+          this.submenuStates.farmacia = true;
+        } else if (path.startsWith("/laboratorio")) {
+          this.submenuStates.laboratorio = true;
+        } else if (path.startsWith("/almacen")) {
+          this.submenuStates.almacen = true;
+        } else if (path.startsWith("/finanzas") || 
+                   path.startsWith("/ventas") || 
+                   path.startsWith("/compras")) {
+          this.submenuStates.finanzas = true;
+        }
+      }
+    }
   },
   methods: {
     toggleMenu() {
@@ -393,6 +434,12 @@ img {
 }
 
 .nav-link.active:hover {
+  background-color: #e8efff !important;
+  color: #2d60ff !important;
+}
+
+/* Nuevo estilo para el menú padre cuando está activo */
+.nav-item .nav-link.active {
   background-color: #e8efff !important;
   color: #2d60ff !important;
 }
