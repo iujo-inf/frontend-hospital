@@ -277,10 +277,36 @@ export default {
                     payment_type_id: this.currentsales.payment_type_id,
                 }
 
-                console.log('Datos a enviar:', form);
-
                 const response = await axios.post('https://backend-hospital-mediplus.onrender.com/api/billing', form);
-                console.log('Respuesta del servidor:', response.data);
+
+                // Obtener los datos completos del cliente y producto
+                const client = this.localClients.find(c => c.id === this.currentsales.client_id);
+                const product = this.localProducts.find(p => p.id === this.currentsales.product_id);
+
+                // Crear el nuevo objeto de venta con todos los datos necesarios
+                const newSale = {
+                    id: response.data.id,
+                    billing_date: new Date().toISOString().split('T')[0],
+                    client: {
+                        id: client.id,
+                        name: client.name,
+                        last_name: client.last_name
+                    },
+                    num_fact: response.data.num_fact,
+                    sale: {
+                        amount: this.currentsales.price * this.currentsales.quantity
+                    },
+                    billing_status: 'Completado',
+                    BillingDetails: [{
+                        product_id: product.id,
+                        product: product,
+                        quantity: this.currentsales.quantity,
+                        price: this.currentsales.price
+                    }]
+                };
+
+                // Agregar la nueva venta al inicio del array
+                this.localSales.unshift(newSale);
 
                 // Mostrar mensaje de éxito
                 Swal.fire({
@@ -290,25 +316,10 @@ export default {
                     timer: 1500
                 });
 
-                // Actualizar la lista de ventas
-                if (response.data) {
-                    // Agregar la nueva venta al array local
-                    this.localSales.push({
-                        id: response.data.id,
-                        billing_date: new Date().toISOString(),
-                        client: this.localClients.find(c => c.id === this.currentsales.client_id),
-                        num_fact: response.data.num_fact || '',
-                        sale: {
-                            amount: this.currentsales.price * this.currentsales.quantity
-                        },
-                        billing_status: 'Completado'
-                    });
-                }
-
                 // Cerrar el modal y limpiar el formulario
                 this.closeModal();
 
-                // Emitir evento para actualizar la vista padre si es necesario
+                // Emitir evento para actualizar la vista padre
                 this.$emit('sale-added');
 
             } catch (error) {
