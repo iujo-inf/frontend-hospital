@@ -83,16 +83,19 @@ const routes: Array<RouteRecordRaw> = [
     name: 'productos',
     component: StoreProductsListView
   },
-  {
+  /*{
     path: '/ventas',
     name: 'ventas',
-<<<<<<< Updated upstream
+
     component: SalesListView
-=======
+
     component: SalesListView,
     meta: { requiresAuth: true }
->>>>>>> Stashed changes
+
   },
+
+  },*/
+
   {
     path: '/compras',
     name: 'compras',

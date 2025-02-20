@@ -11,7 +11,7 @@
       </div>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <router-link class="nav-link d-flex align-items-center" to="/" exact-active-class="active">
+          <router-link class="nav-link d-flex align-items-center" to="/home" exact-active-class="active">
             <img src="/iconos/home.svg" alt="Inicio" width="17" height="17" class="iconColor">
             <span v-show="isOpen" class="ms-3">Inicio</span>
           </router-link>
