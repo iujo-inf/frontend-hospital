@@ -72,11 +72,19 @@ export default {
             this.$emit('toggle-menu')
         },
         cerrarSesion() {
-            // Aquí puedes agregar la lógica para cerrar sesión
-            console.log('Cerrando sesión...');
-            // Por ejemplo:
-            // this.$store.dispatch('logout');
-            // this.$router.push('/login');
+            // Limpiar todos los datos de sessionStorage
+            sessionStorage.clear();
+            
+            // Mostrar mensaje de éxito
+            this.$swal.fire({
+                icon: 'success',
+                title: 'Sesión cerrada',
+                text: 'Has cerrado sesión exitosamente',
+                timer: 1500
+            });
+
+            // Redireccionar al login
+            this.$router.push('/');
         }
     }
 }

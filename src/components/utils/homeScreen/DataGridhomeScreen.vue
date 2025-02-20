@@ -17,13 +17,11 @@
       </div>
       <h2>Ingresa Tu Cuenta</h2>
       <form @submit.prevent="handleSubmit">
-        <label for="username">Usuario:</label>
-        <input type="text" id="username" v-model="username" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" v-model="email" required>
         <label for="password">Contraseña:</label>
         <input type="password" id="password" v-model="password" required>
-        <router-link class="nav-link" to="/home">
-          <button class="btn btn-primary">Iniciar Sesión</button>
-        </router-link>
+        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
       </form>
       <p>¿No tienes cuenta? <router-link to="/register">Regístrate</router-link></p>
     </div>
@@ -31,28 +29,60 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
 export default {
   data() {
     return {
-      username: '',
+      email: '',
       password: '',
+      baseURL: 'https://backend-hospital-mediplus.onrender.com/api/user/login'
     }
   },
   methods: {
-    handleSubmit() {
-      // Lógica para enviar los datos al servidor y manejar la respuesta
-      this.$axios.post('/api/login', {
-        username: this.username,
-        password: this.password
-      })
-      .then(response => {
-        // Manejar la respuesta exitosa (e.g., almacenar el token, redirigir)
-        console.log(response.data);
-      })
-      .catch(error => {
-        // Manejar los errores (e.g., mostrar un mensaje de error)
-        console.error(error);
-      });
+    async handleSubmit() {
+      try {
+        const response = await axios.post(this.baseURL, {
+          email: this.email,
+          password: this.password
+        });
+
+        // Guardar datos en sessionStorage
+        const userData = response.data.data.user;
+        const employeeData = response.data.data.employee;
+        const token = response.data.data.token;
+
+        // Datos del usuario
+        sessionStorage.setItem('firstName', userData.firstName);
+        sessionStorage.setItem('lastName', userData.lastName);
+        sessionStorage.setItem('role_id', userData.role_id);
+        sessionStorage.setItem('user_id', userData.id);
+        
+        // Datos del empleado
+        sessionStorage.setItem('organizational_unit_id', employeeData.organizational_unit_id);
+        sessionStorage.setItem('department_id', employeeData.organizational_unit.departament.id);
+        
+        // Token
+        sessionStorage.setItem('token', token);
+
+        // Mostrar mensaje de éxito
+        await Swal.fire({
+          icon: 'success',
+          title: 'Inicio de sesión exitoso',
+          text: `Bienvenido ${userData.firstName} ${userData.lastName}`,
+          timer: 1500
+        });
+
+        // Redireccionar a home
+        this.$router.push('/home');
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de inicio de sesión',
+          text: error.response?.data?.message || 'Error al iniciar sesión'
+        });
+      }
     }
   }
 }
