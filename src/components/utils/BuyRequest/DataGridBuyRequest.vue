@@ -227,19 +227,46 @@ export default {
         },
         async updateBuyStatus() {
             try {
-                await axios.put(`${this.baseURL}/${this.currentBuy.id}`, { status: this.currentBuy.status });
+                // Obtener la compra original
+                const originalBuy = this.buys.find(b => b.id === this.currentBuy.id);
+                if (!originalBuy) {
+                    throw new Error('Compra no encontrada');
+                }
+
+                // Preparar los datos para la actualización
+                const buyData = {
+                    invoice_number: originalBuy.invoice_number,
+                    date: originalBuy.date,
+                    supplier_id: originalBuy.supplier.id,
+                    department_id: originalBuy.departament.id,
+                    status: this.currentBuy.status,
+                    buy_details: originalBuy.buy_details
+                };
+
+                // Realizar la actualización
+                await axios.put(`${this.baseURL}/${this.currentBuy.id}`, buyData);
+                
+                // Actualizar la lista de compras
                 await this.loadBuys();
+                
+                // Cerrar el modal
                 this.closeEditStatusModal();
-                Swal.fire(
-                    'Actualizado',
-                    `El estado de la compra con N° de Orden ${this.currentBuy.invoice_number} ha sido actualizado con éxito`,
-                    'success'
-                );
+                
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Actualizado',
+                    text: `El estado de la compra con N° de Orden ${originalBuy.invoice_number} ha sido actualizado con éxito`,
+                    timer: 1500
+                });
             } catch (error) {
+                console.error('Error al actualizar:', error);
+                console.error('Respuesta del servidor:', error.response?.data);
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error al actualizar el estado de la compra'
+                    text: error.response?.data?.message || 'Error al actualizar el estado de la compra'
                 });
             }
         },
