@@ -124,27 +124,32 @@ export default class ReportsView extends Vue {
     }
 
     async getDateRange() {
-    try {
-        const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/journal/dates', {
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-            }
-        });
+        try {
+            const response = await axios.get('https://backend-hospital-mediplus.onrender.com/api/journal/dates', {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
 
-        const { minDate, maxDate } = response.data.data;
+            const { minDate, maxDate } = response.data.data;
 
-        // Establecer fechas mínimas y máximas
-        this.dateRange.start = minDate;
-        this.dateRange.end = maxDate;
-        
-        // Establecer fechas por defecto
-        this.dates.startDate = minDate;
-        this.dates.endDate = maxDate;
+            // Establecer fechas mínimas y máximas
+            this.dateRange.start = minDate;
+            this.dateRange.end = maxDate;
+            
+            // Establecer fechas por defecto
+            this.dates.startDate = minDate;
+            this.dates.endDate = maxDate;
 
-    } catch (error: any) {
-        console.error('Error al obtener el rango de fechas:', error);
+        } catch (error: any) {
+            console.error('Error al obtener el rango de fechas:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al obtener el rango de fechas'
+            });
+        }
     }
-}
 
     async generateReport() {
         if (!this.dates.startDate || !this.dates.endDate) {
@@ -273,4 +278,4 @@ export default class ReportsView extends Vue {
 .date-range-info strong {
     color: #002752;
 }
-</style> 
+</style>
