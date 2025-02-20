@@ -50,6 +50,9 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
+import router from '@/router'
+
 export default {
     name: 'NavBar',
     props: {
@@ -71,12 +74,12 @@ export default {
         toggleSideMenu() {
             this.$emit('toggle-menu')
         },
-        cerrarSesion() {
+        async cerrarSesion() {
             // Limpiar todos los datos de sessionStorage
             sessionStorage.clear();
             
             // Mostrar mensaje de éxito
-            this.$swal.fire({
+            await Swal.fire({
                 icon: 'success',
                 title: 'Sesión cerrada',
                 text: 'Has cerrado sesión exitosamente',
@@ -84,7 +87,7 @@ export default {
             });
 
             // Redireccionar al login
-            this.$router.push('/');
+            router.push('/');
         }
     }
 }

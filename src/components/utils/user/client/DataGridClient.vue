@@ -149,7 +149,7 @@ export default {
             clients: [],
             baseURL: 'https://backend-hospital-mediplus.onrender.com/api/client',
             currentPage: 1,
-            itemsPerPage: 8
+            itemsPerPage: 7
         };
     },
     computed: {

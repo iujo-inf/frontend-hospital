@@ -1,21 +1,10 @@
-import { defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
+import { Vue } from 'vue-class-component'
+import router from '@/router'
 
-export default defineComponent({
-  setup() {
-    const router = useRouter()
-
-    const checkAuth = () => {
-      if (!sessionStorage.getItem('user_id')) {
-        router.push('/')
-      }
-    }
-
-    return {
-      checkAuth
-    }
-  },
+export default class AuthGuard extends Vue {
   created() {
-    this.checkAuth()
+    if (!sessionStorage.getItem('user_id')) {
+      router.push('/')
+    }
   }
-}) 
+};
