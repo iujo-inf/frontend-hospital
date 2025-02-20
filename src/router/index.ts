@@ -15,22 +15,25 @@ import FinanceView from '@/views/finance/FinanceView.vue'
 import StoreProductsListView from '@/views/storeProducts/StoreProductsListView.vue'
 import doctorView from '@/views/doctors/doctorview.vue'
 import homeScreenView from '@/views/homeScreen/homeScreenView.vue'
+import UserListClientView from '../views/users/UserListClientView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  {
-    path: '/login',
     name: 'login',
     component: homeScreenView
   },
   {
+    path: '/home',
+    name: 'home',
+    component: HomeView,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/usuarios/pacientes',
     name: 'pacientes',
-    component: UserListPacientView
+    component: UserListPacientView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/usuarios/doctor',
@@ -50,7 +53,8 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/usuarios/proveedores',
     name: 'proveedores',
-    component: UserListSupplierView
+    component: UserListSupplierView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/farmacia/inventario',
@@ -96,6 +100,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/finanzas/resumen',
     name: 'finanzas',
     component: FinanceView
+  },
+  {
+    path: '/usuarios/clientes',
+    name: 'clientes',
+    component: UserListClientView,
+    meta: { requiresAuth: true }
   } 
   // {
   //   path: '/about',
@@ -110,6 +120,27 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+// Agregar guard de navegación
+router.beforeEach((to, from, next) => {
+  // Verificar si la ruta requiere autenticación
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // Verificar si existe la sesión
+    if (!sessionStorage.getItem('user_id')) {
+      // No hay sesión, redirigir al login
+      next({
+        path: '/',
+        query: { redirect: to.fullPath }  // Guardar la ruta a la que intentaba ir
+      })
+    } else {
+      // Hay sesión, permitir la navegación
+      next()
+    }
+  } else {
+    // Ruta pública, permitir la navegación
+    next()
+  }
 })
 
 export default router
