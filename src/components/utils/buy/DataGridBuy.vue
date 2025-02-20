@@ -1,12 +1,12 @@
 <template>
     <div class="container mt-5">
         <div class="grid-view">
-            <input type="text" class="form-control mb-3"
-                placeholder="Buscar por  Fecha, Proveedor, N° de Orden o Estado" v-model="searchQuery" />
+            <input type="text" class="form-control mb-3" placeholder="Buscar por  Fecha, Proveedor, N° de Orden"
+                v-model="searchQuery" />
             <div>
                 <button class="btn btn-primary btn-block" style="display: flex;" @click="openModal()">
                     <img src="/iconos/agregar.svg" alt="Compras" width="45" height="45" class="iconColor">
-                    <b>Agregar Compra</b>
+                    <b>Solicitar Compra</b>
                 </button>
             </div>
         </div>
@@ -23,7 +23,9 @@
                         </div>
                         <div class="form-group">
                             <label for="supplier">Proveedor</label>
-                            <input type="text" id="supplier" v-model="currentBuy.supplier" required class="form-control">
+                            <select id="supplier" v-model="currentBuy.supplier" required class="form-control">
+                                <option value="Administración">Administración</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-row">
@@ -34,22 +36,29 @@
                         </div>
                         <div class="form-group">
                             <label for="amount">Monto</label>
-                            <input type="number" id="amount" v-model="currentBuy.amount" required class="form-control">
+                            <input type="number" id="amount" v-model="currentBuy.amount" required class="form-control"
+                                onkeypress="return event.charCode != 101 && event.charCode != 69 && event.charCode != 46;">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="status">Estado</label>
-                            <select id="status" v-model="currentBuy.status" required class="form-control">
-                                <option value="Solicitado">Solicitado</option>
-                                <option value="Realizado">Realizado</option>
-                                <option value="Cancelado">Cancelado</option>
+                            <label for="department">Departamento</label>
+                            <select id="department" v-model="currentBuy.department" required class="form-control">
+                                <option value="Administración">Administración</option>
                             </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Descripción</label>
+                            <input type="text" id="description" v-model="currentBuy.description" required
+                                class="form-control">
                         </div>
                     </div>
                     <div class="form-group button-group">
                         <button type="button" @click="closeModal" class="btn btn-secondary btn-lg">Cancelar</button>
-                        <button type="submit" class="btn btn-primary btn-lg">{{ isEditing ? 'Actualizar' : 'Guardar' }}</button>
+                        <button type="submit" class="btn btn-primary btn-lg" @click.prevent="confirmUpdate">
+                            {{ isEditing ? 'Actualizar' : 'Guardar' }}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -63,7 +72,8 @@
                     <th>Proveedor</th>
                     <th>N° de Orden</th>
                     <th>Monto</th>
-                    <th>Estado</th>
+                    <th>Departamento</th>
+                    <th>Descripción</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -73,7 +83,8 @@
                     <td>{{ buy.supplier }}</td>
                     <td>{{ buy.invoiceNumber }}</td>
                     <td>${{ buy.amount }}</td>
-                    <td>{{ buy.status }}</td>
+                    <td>{{ buy.department }}</td>
+                    <td>{{ buy.description }}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" @click="editBuy(buy.id)">Editar</button>
                         <button class="btn btn-danger btn-sm" @click="deleteBuy(buy.id)">Eliminar</button>
@@ -85,6 +96,7 @@
 </template>
 
 <script>
+
 export default {
     name: 'DataGridBuy',
     data() {
@@ -94,25 +106,25 @@ export default {
             isEditing: false,
             currentBuy: {
                 id: null,
-                date: '',
+                date: this.getCurrentDate(),
                 supplier: '',
                 invoiceNumber: '',
                 amount: 0,
-                status: 'Solicitado'
+                department: 'Solicitado'
             },
             buys: [
-                { id: 1, invoiceNumber: '422001', date: '2024-12-19', amount: 32000, supplier: "Tecnomed", status: 'Realizado' },
-                { id: 2, invoiceNumber: '423001', date: '2024-12-26', amount: 29040, supplier: "Textil Salud", status: 'Cancelado' },
-                { id: 3, invoiceNumber: '418005', date: '2025-01-05', amount: 19290, supplier: "Innovasalud", status: 'Realizado' },
-                { id: 4, invoiceNumber: '412009', date: '2025-01-09', amount: 10020, supplier: "MedSupply", status: 'Cancelado' },
-                { id: 5, invoiceNumber: '422001', date: '2025-01-15', amount: 5000, supplier: "Tecnomed", status: 'Realizado' },
+                { id: 1, invoiceNumber: '422001', date: '2024-12-19', amount: 32000, supplier: "Tecnomed", department: 'Cirugía', description: 'Compra de instrumental quirúrgico' },
+                { id: 2, invoiceNumber: '423001', date: '2024-12-26', amount: 29040, supplier: "Textil Salud", department: 'Si', description: 'Compra de insumos medicos' },
+                { id: 3, invoiceNumber: '418005', date: '2025-01-05', amount: 19290, supplier: "Innovasalud", department: 'Cirugía', description: 'Compra de equipos de oficina' },
+                { id: 4, invoiceNumber: '412009', date: '2025-01-09', amount: 10020, supplier: "MedSupply", department: 'Si', description: 'Compra de insumos medicos' },
+                { id: 5, invoiceNumber: '422001', date: '2025-01-15', amount: 5000, supplier: "Tecnomed", department: 'Cirugía', description: 'Compra de instrumental quirúrgico' },
             ],
         };
     },
     computed: {
         filteredBuys() {
             return this.buys.filter(buy => {
-                const fullName = `${buy.invoiceNumber} ${buy.supplier} ${buy.date} ${buy.status}`.toLowerCase();
+                const fullName = `${buy.invoiceNumber} ${buy.supplier} ${buy.date} ${buy.department}`.toLowerCase();
                 return fullName.includes(this.searchQuery.toLowerCase());
             });
         },
@@ -122,11 +134,11 @@ export default {
             this.isEditing = false;
             this.currentBuy = {
                 id: null,
-                date: '',
+                date: this.getCurrentDate(),
                 supplier: '',
                 invoiceNumber: '',
                 amount: 0,
-                status: 'Solicitado'
+                department: 'Solicitado'
             };
             this.showModal = true;
         },
@@ -142,6 +154,11 @@ export default {
                 this.showModal = true;
             }
         },
+        confirmUpdate() {
+            if (confirm(`¿Está seguro que desea ${this.isEditing ? 'actualizar' : 'guardar'} esta compra?`)) {
+                this.saveBuy();
+            }
+        },
         saveBuy() {
             if (this.isEditing) {
                 const index = this.buys.findIndex(buy => buy.id === this.currentBuy.id);
@@ -149,7 +166,7 @@ export default {
                     this.buys.splice(index, 1, { ...this.currentBuy });
                 }
             } else {
-                const newId = Math.max(...this.buys.map(b => b.id)) + 1;
+                const newId = Math.max(...this.buys.map(b => b.id), 0) + 1; // Manejo de array vacío
                 this.buys.push({
                     id: newId,
                     ...this.currentBuy
@@ -161,9 +178,20 @@ export default {
             if (confirm(`¿Está seguro que desea eliminar la compra con ID: ${id}?`)) {
                 this.buys = this.buys.filter(buy => buy.id !== id);
             }
+        },
+        getCurrentDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
     },
 };
+
+
+
+
 </script>
 
 <style scoped>
@@ -182,6 +210,7 @@ export default {
 }
 
 .modal-overlay {
+    z-index: 1000 !important;
     position: fixed;
     top: 0;
     left: 0;
@@ -243,5 +272,11 @@ export default {
 
 .btn-secondary {
     margin-right: 10px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 </style>

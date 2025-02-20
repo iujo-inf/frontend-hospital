@@ -6,6 +6,7 @@ import PharmacyInventoryView from '../views/pharmacy/PharmacyInventoryView.vue'
 import BillingView from '../views/pharmacy/BillingView.vue'
 import SalesListView from '../views/Sales/SaleslistView.vue'
 import BuyListView from '../views/buy/BuyListView.vue'
+import BuyListViewRequest from '../views/BuyRequest/BuyRequestListView.vue'
 import AppointmentsListView from '../views/appointments/appointmentsListView.vue'
 import BillingAppointmentsListView from '../views/BillingAppointments/BillingAppointmentsListView.vue'
 import BillingEmergenciesListView from '../views/BillingEmergencies/BillingEmergenciesListView.vue'
@@ -87,9 +88,14 @@ const routes: Array<RouteRecordRaw> = [
     component: SalesListView
   },
   {
-    path: '/compras',
-    name: 'compras',
+    path: '/compras/solicitar-compra',
+    name: 'solicitar-compras',
     component: BuyListView
+  },
+  {
+    path: '/compras/solicitudes-de-compras',
+    name: 'solicitudes-de-compras',
+    component: BuyListViewRequest
   },
   {
     path: '/cita',
