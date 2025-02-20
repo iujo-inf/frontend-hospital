@@ -1,7 +1,7 @@
 <template>
-  <div class="UserListPacient">
+  <div class="UserListPatient">
     <BaseLayout page-title="Listado de Pacientes">
-      <!-- Aquí irá el componente de la tabla de pacientes -->
+      <DataGridPatient />
     </BaseLayout>
   </div>
 </template>
@@ -9,11 +9,16 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import BaseLayout from "@/components/layouts/BaseLayout.vue";
+import DataGridPatient from '@/components/utils/user/patient/DataGridPatient.vue';
+import authGuard from '@/mixins/authGuard'
+
 
 @Options({
   components: {
     BaseLayout,
+    DataGridPatient,
   },
+  mixins: [authGuard],
 })
-export default class UserListPacientView extends Vue {}
+export default class UserListPatientView extends Vue {}
 </script> 
