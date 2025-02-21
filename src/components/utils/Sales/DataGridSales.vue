@@ -20,17 +20,15 @@
                         <div class="form-group">
                             <label for="type">Buscar Cliente</label>
                             <select id="description" v-model="currentsales.client_id" required class="form-control">
-                                <option value="" disabled selected>Selecciona una opción</option> <!-- Opción por defecto -->
+                                <option value="" disabled selected>Selecciona una opción</option>
                                 <option v-for="clients in localClients" :key="clients.id" :value="clients.id">{{ clients.name }} {{ clients.last_name }}</option>
-                                <!-- Agrega más opciones según sea necesario -->
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="type">Buscar Paciente</label>
                             <select id="description" v-model="currentsales.patient_id" required class="form-control">
-                                <option value="" disabled selected>Selecciona una opción</option> <!-- Opción por defecto -->
+                                <option value="" disabled selected>Selecciona una opción</option>
                                 <option v-for="patient in localPatients" :key="patient.id" :value="patient.id">{{ patient.firstName }} {{ patient.lastName }}</option>
-                                <!-- Agrega más opciones según sea necesario -->
                             </select>
                         </div>
                     </div>
@@ -38,9 +36,8 @@
                         <div class="form-group">
                             <label for="type">Buscar Producto</label>
                             <select id="description" v-model="currentsales.product_id" required class="form-control">
-                                <option value="" disabled selected>Selecciona una opción</option> <!-- Opción por defecto -->
+                                <option value="" disabled selected>Selecciona una opción</option>
                                 <option v-for="products in localProducts" :key="products.id" :value="products.id">{{ products.name }}</option>
-                                <!-- Agrega más opciones según sea necesario -->
                             </select>
                         </div>
                         <div class="form-group">
@@ -48,7 +45,6 @@
                             <select id="description" v-model="currentsales.payment_type_id" required class="form-control">
                                 <option value="" disabled selected>Selecciona una opción</option>
                                 <option v-for="payment in localPayments" :key="payment.id" :value="payment.id">{{ payment.description }}</option>
-                                <!-- Agrega más opciones según sea necesario -->
                             </select>
                         </div>
                     </div>
@@ -82,8 +78,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="sales in filteredsales" :key="sales.id">
-                    <td>{{ sales.billing_date }}</td>
+                <tr v-for="sales in paginatedSales" :key="sales.id">
+                    <td>{{ formatDate(sales.billing_date) }}</td>
                     <td>{{ sales.client?.name }} {{ sales.client?.last_name }}</td>
                     <td>{{ sales.num_fact }}</td>
                     <td>{{ sales.sale?.amount || 0 }}</td>
@@ -91,6 +87,24 @@
                 </tr>
             </tbody>
         </table>
+
+        <!-- Paginación -->
+        <div class="pagination-container" v-if="totalPages > 1">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                        <a class="page-link" href="#" @click.prevent="currentPage--">Anterior</a>
+                    </li>
+                    <li class="page-item" v-for="page in totalPages" :key="page" 
+                        :class="{ active: page === currentPage }">
+                        <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+                    </li>
+                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                        <a class="page-link" href="#" @click.prevent="currentPage++">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </template>
 
@@ -98,6 +112,7 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import authGuard from '@/mixins/authGuard';
+import moment from 'moment';
 
 export default {
     name: 'DataGridSales',
@@ -142,12 +157,13 @@ export default {
             localProducts: [],
             localPatients: [],
             localPayments: [],
+            currentPage: 1,
+            itemsPerPage: 12
         };
     },
     watch: {
-        // Observar cambios en la prop sales
         sales: {
-            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            immediate: true,
             handler(newSales) {
                 if (newSales) {
                     this.localSales = newSales.map(sale => ({
@@ -159,7 +175,7 @@ export default {
             }
         },
         clients: {
-            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            immediate: true,
             handler(newClient) {
                 if (newClient) {
                     this.localClients = newClient.map(client => ({
@@ -169,7 +185,7 @@ export default {
             }
         },
         products: {
-            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            immediate: true,
             handler(newProducts) {
                 if (newProducts) {
                     this.localProducts = newProducts.map(Products => ({
@@ -179,7 +195,7 @@ export default {
             }
         },
         patients: {
-            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            immediate: true,
             handler(newPatient) {
                 if (newPatient) {
                     this.localPatients = newPatient.map(Patient => ({
@@ -189,7 +205,7 @@ export default {
             }
         },
         payments: {
-            immediate: true, // Esto hace que el watcher se ejecute inmediatamente
+            immediate: true,
             handler(newPayment) {
                 if (newPayment) {
                     this.localPayments = newPayment.map(Payment => ({
@@ -200,7 +216,6 @@ export default {
         },
     },
     created() {
-        // Copia los datos de la prop sales a localSales
         this.localSales = this.sales.map(sale => ({
             ...sale,
             sale: sale.sale || { amount: 0 },
@@ -210,19 +225,25 @@ export default {
         this.localProducts = [...this.products];
         this.localPatients = [...this.patients];
         this.localPayments = [...this.payments];
-        //console.log(this.localSales)
-        //this.localBillingDetail = [...this.billingDetail];
     },
     computed: {
         filteredsales() {
             return this.localSales.map(sales => ({
                 ...sales,
-                sale: sales.sale || { amount: 0 }, // Si sale es null, proporciona un objeto por defecto
-                client: sales.client || { name: '', last_name: '' }, // Si client es null, proporciona un objeto por defecto
+                sale: sales.sale || { amount: 0 },
+                client: sales.client || { name: '', last_name: '' },
             })).filter(sales => {
                 const searchString = `${sales.billing_date || ''} ${sales.client.name || ''} ${sales.client.last_name || ''} ${sales.num_fact || ''} ${sales.sale.amount || 0} ${sales.billing_status || ''}`.toLowerCase();
                 return searchString.includes(this.searchQuery.toLowerCase());
             });
+        },
+        paginatedSales() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.filteredsales.slice(start, end);
+        },
+        totalPages() {
+            return Math.ceil(this.filteredsales.length / this.itemsPerPage);
         }
     },
     methods: {
@@ -252,7 +273,6 @@ export default {
         },
         async savesales() {
             try {
-                // Validar datos antes de enviar
                 if (!this.currentsales.client_id || 
                     !this.currentsales.product_id || 
                     !this.currentsales.payment_type_id ||
@@ -281,11 +301,9 @@ export default {
 
                 const response = await axios.post('https://backend-hospital-mediplus.onrender.com/api/billing', form);
 
-                // Obtener los datos completos del cliente y producto
                 const client = this.localClients.find(c => c.id === this.currentsales.client_id);
                 const product = this.localProducts.find(p => p.id === this.currentsales.product_id);
 
-                // Crear el nuevo objeto de venta con todos los datos necesarios
                 const newSale = {
                     id: response.data.id,
                     billing_date: new Date().toISOString().split('T')[0],
@@ -307,10 +325,8 @@ export default {
                     }]
                 };
 
-                // Agregar la nueva venta al inicio del array
                 this.localSales.unshift(newSale);
 
-                // Mostrar mensaje de éxito
                 Swal.fire({
                     icon: 'success',
                     title: 'Éxito',
@@ -318,10 +334,8 @@ export default {
                     timer: 1500
                 });
 
-                // Cerrar el modal y limpiar el formulario
                 this.closeModal();
 
-                // Emitir evento para actualizar la vista padre
                 this.$emit('sale-added');
 
             } catch (error) {
@@ -350,6 +364,9 @@ export default {
                 });
             }
         },
+        formatDate(date) {
+            return moment(date).format('DD/MM/YYYY');
+        }
     },
 };
 </script>
@@ -432,11 +449,29 @@ export default {
 .btn-secondary {
     margin-right: 10px;
 }
-.positive {
-    color: green;
+
+.pagination-container {
+    margin-top: 20px;
 }
 
-.negative {
-    color: red;
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    color: #2d60ff;
+    cursor: pointer;
+}
+
+.page-item.active .page-link {
+    background-color: #2d60ff;
+    border-color: #2d60ff;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    cursor: default;
 }
 </style>

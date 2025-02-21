@@ -135,7 +135,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="buy in filteredBuys" :key="buy.id">
+                <tr v-for="buy in paginatedBuys" :key="buy.id">
                     <td>{{ formatDate(buy.date) }}</td>
                     <td>{{ buy.invoice_number }}</td>
                     <td>{{ buy.supplier.business_name }}</td>
@@ -143,12 +143,30 @@
                     <td>{{ buy.departament.department_name }}</td>
                     <td><span :class="statusClass(buy.status)">{{ buy.status }}</span></td>
                     <td>
-                        <button class="btn btn-primary btn-sm" @click="editBuy(buy.id)">Editar</button>
-                        <button class="btn btn-danger btn-sm" @click="deleteBuy(buy.id)">Eliminar</button>
+                        <button v-if="buy.status === 'pendiente'" class="btn btn-primary btn-sm" @click="editBuy(buy.id)">Editar</button>
+                        <button v-if="buy.status === 'pendiente'" class="btn btn-danger btn-sm" @click="deleteBuy(buy.id)">Eliminar</button>
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        <!-- Paginación -->
+        <div class="pagination-container" v-if="totalPages > 1">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                        <a class="page-link" href="#" @click.prevent="currentPage--">Anterior</a>
+                    </li>
+                    <li class="page-item" v-for="page in totalPages" :key="page" 
+                        :class="{ active: page === currentPage }">
+                        <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+                    </li>
+                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                        <a class="page-link" href="#" @click.prevent="currentPage++">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </template>
 
@@ -172,7 +190,8 @@ export default {
                 supplier: '',
                 amount: 0,
                 department: null,
-                buy_details: []
+                buy_details: [],
+                status: 'pendiente'
             },
             newDetail: {
                 product_id: null,
@@ -285,9 +304,20 @@ export default {
             }
         },
         confirmUpdate() {
-            if (confirm(`¿Está seguro que desea ${this.isEditing ? 'actualizar' : 'guardar'} esta compra?`)) {
-                this.saveBuy();
-            }
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: `¿Está seguro que desea ${this.isEditing ? 'actualizar' : 'guardar'} esta compra?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.saveBuy();
+                }
+            });
         },
         async saveBuy() {
             try {
@@ -546,5 +576,30 @@ input[type="number"]::-webkit-outer-spin-button {
     border: 2px solid green;
     background-color: white;
     color: green;
+}
+
+.pagination-container {
+    margin-top: 20px;
+}
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    color: #2d60ff;
+    cursor: pointer;
+}
+
+.page-item.active .page-link {
+    background-color: #2d60ff;
+    border-color: #2d60ff;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    cursor: default;
 }
 </style>

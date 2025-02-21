@@ -3,6 +3,10 @@
         <div class="grid-view">
             <input type="text" class="form-control mb-3" placeholder="Buscar por Fecha, Proveedor, N° de Orden"
                 v-model="searchQuery" />
+            <div class="button-group">
+                <button class="btn btn-danger" @click="showRejectedModal = true">Ver Rechazadas</button>
+                <button class="btn btn-success" @click="showApprovedModal = true">Ver Aprobadas</button>
+            </div>
         </div>
 
         <table class="table table-hover">
@@ -18,7 +22,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="buy in filteredBuys" :key="buy.id">
+                <tr v-for="buy in paginatedBuys" :key="buy.id">
                     <td>{{ formatDate(buy.date) }}</td>
                     <td>{{ buy.invoice_number }}</td>
                     <td>{{ buy.supplier.business_name }}</td>
@@ -33,6 +37,84 @@
                 </tr>
             </tbody>
         </table>
+
+        <!-- Paginación -->
+        <div class="pagination-container" v-if="totalPages > 1">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                        <a class="page-link" href="#" @click.prevent="currentPage--">Anterior</a>
+                    </li>
+                    <li class="page-item" v-for="page in totalPages" :key="page" 
+                        :class="{ active: page === currentPage }">
+                        <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+                    </li>
+                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                        <a class="page-link" href="#" @click.prevent="currentPage++">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Modal para ver las compras rechazadas -->
+        <div v-if="showRejectedModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 class="modal-title">Compras Rechazadas</h2>
+                <button type="button" @click="showRejectedModal = false" class="btn btn-secondary">Cerrar</button>
+                <table class="table table-hover mt-3">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>N° de Orden</th>
+                            <th>Proveedor</th>
+                            <th>Monto Total</th>
+                            <th>Departamento</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="buy in rejectedBuys" :key="buy.id">
+                            <td>{{ formatDate(buy.date) }}</td>
+                            <td>{{ buy.invoice_number }}</td>
+                            <td>{{ buy.supplier.business_name }}</td>
+                            <td>${{ calculateTotalAmount(buy) }}</td>
+                            <td>{{ buy.departament.department_name }}</td>
+                            <td><span :class="statusClass(buy.status)">{{ buy.status }}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal para ver las compras aprobadas -->
+        <div v-if="showApprovedModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 class="modal-title">Compras Aprobadas</h2>
+                <button type="button" @click="showApprovedModal = false" class="btn btn-secondary">Cerrar</button>
+                <table class="table table-hover mt-3">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>N° de Orden</th>
+                            <th>Proveedor</th>
+                            <th>Monto Total</th>
+                            <th>Departamento</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="buy in approvedBuys" :key="buy.id">
+                            <td>{{ formatDate(buy.date) }}</td>
+                            <td>{{ buy.invoice_number }}</td>
+                            <td>{{ buy.supplier.business_name }}</td>
+                            <td>${{ calculateTotalAmount(buy) }}</td>
+                            <td>{{ buy.departament.department_name }}</td>
+                            <td><span :class="statusClass(buy.status)">{{ buy.status }}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         <!-- Modal para editar el estado de la compra -->
         <div v-if="showEditStatusModal" class="modal-overlay">
@@ -63,13 +145,15 @@ import Swal from 'sweetalert2';
 import authGuard from '@/mixins/authGuard';
 
 export default {
-    name: 'DataGridBuy',
+    name: 'DataGridBuyRequest',
     mixins: [authGuard],
     data() {
         return {
             searchQuery: '',
             showModal: false,
             showEditStatusModal: false,
+            showRejectedModal: false,
+            showApprovedModal: false,
             isEditing: false,
             currentBuy: {
                 id: null,
@@ -90,18 +174,15 @@ export default {
             baseURL: 'https://backend-hospital-mediplus.onrender.com/api/buy',
             currentPage: 1,
             itemsPerPage: 7,
-            uniqueProducts: [
-                { id: 1, name: 'Producto A' },
-                { id: 2, name: 'Producto B' },
-                { id: 3, name: 'Producto C' }
-            ]
+            uniqueProducts: [],
+            filterStatus: 'pendiente'
         };
     },
     computed: {
         filteredBuys() {
             return this.buys.filter(buy => {
                 const fullName = `${buy.invoice_number} ${buy.supplier.business_name} ${buy.date} ${buy.departament.department_name}`.toLowerCase();
-                return fullName.includes(this.searchQuery.toLowerCase());
+                return fullName.includes(this.searchQuery.toLowerCase()) && buy.status === this.filterStatus;
             });
         },
         paginatedBuys() {
@@ -117,6 +198,12 @@ export default {
         },
         uniqueDepartments() {
             return [...new Map(this.buys.map(buy => [buy.departament.id, buy.departament])).values()];
+        },
+        rejectedBuys() {
+            return this.buys.filter(buy => buy.status === 'rechazada');
+        },
+        approvedBuys() {
+            return this.buys.filter(buy => buy.status === 'aprobada');
         }
     },
     async created() {
@@ -134,24 +221,6 @@ export default {
                     text: 'Error al cargar las compras'
                 });
             }
-        },
-        openModal() {
-            this.isEditing = false;
-            this.currentBuy = {
-                id: null,
-                date: this.getCurrentDate(),
-                invoiceNumber: '',
-                supplier: '',
-                amount: 0,
-                department: null,
-                buy_details: [],
-                status: ''
-            };
-            this.showModal = true;
-        },
-        closeModal() {
-            this.showModal = false;
-            this.isEditing = false;
         },
         openEditStatusModal(buy) {
             this.currentBuy = { ...buy };
@@ -177,7 +246,6 @@ export default {
 
             if (result.isConfirmed) {
                 try {
-                    // Preparar los datos para la actualización
                     const buyData = {
                         invoice_number: buy.invoice_number,
                         date: buy.date,
@@ -226,7 +294,6 @@ export default {
 
             if (result.isConfirmed) {
                 try {
-                    // Preparar los datos para la actualización
                     const buyData = {
                         invoice_number: buy.invoice_number,
                         date: buy.date,
@@ -236,7 +303,7 @@ export default {
                         buy_details: buy.buy_details
                     };
 
-                    await axios.put(`${this.baseURL}/${id}`, buyData);
+                    await axios.delete(`${this.baseURL}/${id}`, buyData);
                     await this.loadBuys();
                     
                     Swal.fire({
@@ -259,13 +326,11 @@ export default {
         },
         async updateBuyStatus() {
             try {
-                // Obtener la compra original
                 const originalBuy = this.buys.find(b => b.id === this.currentBuy.id);
                 if (!originalBuy) {
                     throw new Error('Compra no encontrada');
                 }
 
-                // Preparar los datos para la actualización
                 const buyData = {
                     invoice_number: originalBuy.invoice_number,
                     date: originalBuy.date,
@@ -275,16 +340,10 @@ export default {
                     buy_details: originalBuy.buy_details
                 };
 
-                // Realizar la actualización
                 await axios.put(`${this.baseURL}/${this.currentBuy.id}`, buyData);
-                
-                // Actualizar la lista de compras
                 await this.loadBuys();
-                
-                // Cerrar el modal
                 this.closeEditStatusModal();
                 
-                // Mostrar mensaje de éxito
                 Swal.fire({
                     icon: 'success',
                     title: 'Actualizado',
@@ -317,18 +376,6 @@ export default {
         formatDate(dateString) {
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
             return new Date(dateString).toLocaleDateString(undefined, options);
-        },
-        addDetailBuy() {
-            if (this.newDetail.product_id && this.newDetail.quantity > 0 && this.newDetail.buy_price > 0) {
-                this.currentBuy.buy_details.push({ ...this.newDetail });
-                this.newDetail = { product_id: null, quantity: 0, buy_price: 0 };
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Advertencia',
-                    text: 'Por favor, complete todos los campos del detalle de compra'
-                });
-            }
         },
         statusClass(status) {
             switch (status) {

@@ -95,7 +95,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="supplier in activeFilteredSuppliers" :key="supplier.id">
+                <tr v-for="supplier in paginatedSuppliers" :key="supplier.id">
                     <td>{{ supplier.rif }}</td>
                     <td>{{ supplier.address }}</td>
                     <td>{{ supplier.business_name }}</td>
@@ -107,6 +107,24 @@
                 </tr>
             </tbody>
         </table>
+
+        <!-- Paginación -->
+        <div class="pagination-container" v-if="totalPages > 1">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                        <a class="page-link" href="#" @click.prevent="currentPage--">Anterior</a>
+                    </li>
+                    <li class="page-item" v-for="page in totalPages" :key="page" 
+                        :class="{ active: page === currentPage }">
+                        <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+                    </li>
+                    <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                        <a class="page-link" href="#" @click.prevent="currentPage++">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </template>
 
@@ -133,6 +151,8 @@ export default {
             suppliers: [],
             baseURL: 'https://backend-hospital-mediplus.onrender.com/api/supplier',
             showInactiveModal: false,
+            currentPage: 1,
+            itemsPerPage: 7
         };
     },
     computed: {
@@ -147,6 +167,14 @@ export default {
         },
         inactiveSuppliers() {
             return this.suppliers.filter(supplier => !supplier.status);
+        },
+        paginatedSuppliers() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.activeFilteredSuppliers.slice(start, end);
+        },
+        totalPages() {
+            return Math.ceil(this.activeFilteredSuppliers.length / this.itemsPerPage);
         }
     },
     async created() {
@@ -318,6 +346,12 @@ export default {
             }
         }
     },
+    watch: {
+        // Resetear a la primera página cuando cambia el filtro
+        searchQuery() {
+            this.currentPage = 1;
+        }
+    }
 };
 </script>
 
@@ -405,7 +439,28 @@ export default {
     padding: 5px 15px;
 }
 
-.table {
-    width: 100%;
+.pagination-container {
+    margin-top: 20px;
+}
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    color: #2d60ff;
+    cursor: pointer;
+}
+
+.page-item.active .page-link {
+    background-color: #2d60ff;
+    border-color: #2d60ff;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    cursor: default;
 }
 </style>
