@@ -10,12 +10,14 @@
 import { Options, Vue } from 'vue-class-component';
 import BaseLayout from '@/components/layouts/BaseLayout.vue';
 import DataGridBuyRequest from '@/components/utils/BuyRequest/DataGridBuyRequest.vue';
+import authGuard from '@/mixins/authGuard';
 
 @Options({
     components: {
         BaseLayout,
         DataGridBuyRequest,
     },
+    mixins: [authGuard],
 })
 export default class BuyListView extends Vue { }
 </script>

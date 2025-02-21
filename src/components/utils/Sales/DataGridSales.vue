@@ -97,9 +97,11 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import authGuard from '@/mixins/authGuard';
 
 export default {
     name: 'DataGridSales',
+    mixins: [authGuard],
     props: {
         sales: {
             type: Array,

@@ -10,14 +10,12 @@
 import { Options, Vue } from 'vue-class-component';
 import BaseLayout from '@/components/layouts/BaseLayout.vue';
 import DataGridUser from '@/components/utils/user/DataGridUser.vue';
-import authGuard from '@/mixins/authGuard'
 
 @Options({
   components: {
     BaseLayout,
     DataGridUser, // Asegúrate de registrar el componente aquí
   },
-  mixins: [authGuard],
 })
 export default class HomeView extends Vue {}
 </script>

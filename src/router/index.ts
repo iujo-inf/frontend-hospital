@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'login',
-    component: homeScreenView
+    component: homeScreenView,
   },
   {
     path: '/home',
@@ -41,17 +41,20 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/usuarios/doctor',
     name: 'doctor',
-    component: doctorView
+    component: doctorView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/laboratorio/facturacion',
     name: 'facturacion-laboratorio',
-    component: BillingLaboratoriesListView
+    component: BillingLaboratoriesListView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/citas/facturacion',
     name: 'facturacion-citas',
-    component: BillingAppointmentsListView
+    component: BillingAppointmentsListView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/usuarios/proveedores',
@@ -62,27 +65,32 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/farmacia/inventario',
     name: 'inventario',
-    component: PharmacyInventoryView
+    component: PharmacyInventoryView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/farmacia/facturacion',
     name: 'facturacion-farmacia',
-    component: BillingView
+    component: BillingView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/emergencia/listado',
     name: 'listado-emergencia',
-    component: EmergencyListView
+    component: EmergencyListView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/emergencia/facturacion',
     name: 'facturacion-emergencia',
-    component: BillingEmergenciesListView
+    component: BillingEmergenciesListView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/almacen/productos',
     name: 'productos',
-    component: StoreProductsListView
+    component: StoreProductsListView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/ventas',
@@ -96,22 +104,26 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/compras/solicitar-compra',
     name: 'solicitar-compras',
-    component: BuyListView
+    component: BuyListView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/compras/solicitudes-de-compras',
     name: 'solicitudes-de-compras',
-    component: BuyListViewRequest
+    component: BuyListViewRequest,
+    meta: { requiresAuth: true }
   },
   {
     path: '/cita',
     name: 'cita',
-    component: AppointmentsListView
+    component: AppointmentsListView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/finanzas/resumen',
     name: 'finanzas',
-    component: FinanceView
+    component: FinanceView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/reportes',
@@ -119,7 +131,7 @@ const routes: Array<RouteRecordRaw> = [
     component: ReportsView,
     meta: { 
       requiresAuth: true,
-      title: 'Reportes'
+      title: 'Reportes',
     }
   },
   {

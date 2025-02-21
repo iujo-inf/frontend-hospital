@@ -18,13 +18,14 @@ import { Options, Vue } from 'vue-class-component';
 import BaseLayout from '@/components/layouts/BaseLayout.vue';
 import DataGridSales from '@/components/utils/Sales/DataGridSales.vue';
 import axios from 'axios';
-
+import authGuard from '@/mixins/authGuard';
 
 @Options({
     components: {
         BaseLayout,
         DataGridSales,
     },
+    mixins: [authGuard],
 })
 export default class SalesListView extends Vue {
     salesData = [];

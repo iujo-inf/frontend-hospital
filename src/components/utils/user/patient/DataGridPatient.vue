@@ -90,9 +90,11 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import authGuard from '@/mixins/authGuard';
 
 export default {
     name: 'DataGridPatient',
+    mixins: [authGuard],
     data() {
         return {
             searchQuery: '',

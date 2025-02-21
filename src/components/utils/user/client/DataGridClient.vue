@@ -130,9 +130,11 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import authGuard from '@/mixins/authGuard';
 
 export default {
     name: 'DataGridClient',
+    mixins: [authGuard],
     data() {
         return {
             searchQuery: '',
@@ -457,4 +459,4 @@ export default {
     pointer-events: none;
     cursor: default;
 }
-</style> 
+</style>
