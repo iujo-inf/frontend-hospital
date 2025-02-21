@@ -13,7 +13,7 @@
                     <th>Proveedor</th>
                     <th>Monto Total</th>
                     <th>Departamento</th>
-                    <th>Descripción</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -28,7 +28,7 @@
                     <td>
                         <button v-if="buy.status === 'pendiente'" class="btn btn-primary btn-sm" @click="approveBuy(buy.id)">Aprobar</button>
                         <button v-if="buy.status === 'pendiente'" class="btn btn-danger btn-sm" @click="rejectBuy(buy.id)">Rechazar</button>
-                        <button v-else class="btn btn-secondary btn-sm" @click="openEditStatusModal(buy)">Editar Estado</button>
+                        <button v-else class="btn btn-info btn-sm" @click="openEditStatusModal(buy)">Editar Estado</button>
                     </td>
                 </tr>
             </tbody>
@@ -177,18 +177,33 @@ export default {
 
             if (result.isConfirmed) {
                 try {
-                    await axios.put(`${this.baseURL}/${id}`, { status: 'aprobada' });
+                    // Preparar los datos para la actualización
+                    const buyData = {
+                        invoice_number: buy.invoice_number,
+                        date: buy.date,
+                        supplier_id: buy.supplier.id,
+                        department_id: buy.departament.id,
+                        status: 'aprobada',
+                        buy_details: buy.buy_details
+                    };
+
+                    await axios.put(`${this.baseURL}/${id}`, buyData);
                     await this.loadBuys();
-                    Swal.fire(
-                        'Aprobada',
-                        `La compra con N° de Orden ${buy.invoice_number} ha sido aprobada con éxito`,
-                        'success'
-                    );
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Aprobada',
+                        text: `La compra con N° de Orden ${buy.invoice_number} ha sido aprobada con éxito`,
+                        timer: 1500
+                    });
                 } catch (error) {
+                    console.error('Error al aprobar:', error);
+                    console.error('Respuesta del servidor:', error.response?.data);
+                    
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Error al aprobar la compra'
+                        text: error.response?.data?.message || 'Error al aprobar la compra'
                     });
                 }
             }
@@ -211,37 +226,79 @@ export default {
 
             if (result.isConfirmed) {
                 try {
-                    await axios.delete(`${this.baseURL}/${id}`);
+                    // Preparar los datos para la actualización
+                    const buyData = {
+                        invoice_number: buy.invoice_number,
+                        date: buy.date,
+                        supplier_id: buy.supplier.id,
+                        department_id: buy.departament.id,
+                        status: 'rechazada',
+                        buy_details: buy.buy_details
+                    };
+
+                    await axios.put(`${this.baseURL}/${id}`, buyData);
                     await this.loadBuys();
-                    Swal.fire(
-                        'Rechazado',
-                        `La compra con N° de Orden ${buy.invoice_number} ha sido rechazada con éxito`,
-                        'success'
-                    );
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Rechazada',
+                        text: `La compra con N° de Orden ${buy.invoice_number} ha sido rechazada con éxito`,
+                        timer: 1500
+                    });
                 } catch (error) {
+                    console.error('Error al rechazar:', error);
+                    console.error('Respuesta del servidor:', error.response?.data);
+                    
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Error al rechazar la compra'
+                        text: error.response?.data?.message || 'Error al rechazar la compra'
                     });
                 }
             }
         },
         async updateBuyStatus() {
             try {
-                await axios.put(`${this.baseURL}/${this.currentBuy.id}`, { status: this.currentBuy.status });
+                // Obtener la compra original
+                const originalBuy = this.buys.find(b => b.id === this.currentBuy.id);
+                if (!originalBuy) {
+                    throw new Error('Compra no encontrada');
+                }
+
+                // Preparar los datos para la actualización
+                const buyData = {
+                    invoice_number: originalBuy.invoice_number,
+                    date: originalBuy.date,
+                    supplier_id: originalBuy.supplier.id,
+                    department_id: originalBuy.departament.id,
+                    status: this.currentBuy.status,
+                    buy_details: originalBuy.buy_details
+                };
+
+                // Realizar la actualización
+                await axios.put(`${this.baseURL}/${this.currentBuy.id}`, buyData);
+                
+                // Actualizar la lista de compras
                 await this.loadBuys();
+                
+                // Cerrar el modal
                 this.closeEditStatusModal();
-                Swal.fire(
-                    'Actualizado',
-                    `El estado de la compra con N° de Orden ${this.currentBuy.invoice_number} ha sido actualizado con éxito`,
-                    'success'
-                );
+                
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Actualizado',
+                    text: `El estado de la compra con N° de Orden ${originalBuy.invoice_number} ha sido actualizado con éxito`,
+                    timer: 1500
+                });
             } catch (error) {
+                console.error('Error al actualizar:', error);
+                console.error('Respuesta del servidor:', error.response?.data);
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error al actualizar el estado de la compra'
+                    text: error.response?.data?.message || 'Error al actualizar el estado de la compra'
                 });
             }
         },

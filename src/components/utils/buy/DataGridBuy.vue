@@ -31,7 +31,10 @@
                         <div class="form-group">
                             <label for="supplier">Proveedor</label>
                             <select id="supplier" v-model="currentBuy.supplier" required class="form-control">
-                                <option v-for="supplier in uniqueSuppliers" :key="supplier.id" :value="supplier">
+                                <option value="" disabled selected>Seleccione un proveedor</option>
+                                <option v-for="supplier in uniqueSuppliers" 
+                                        :key="supplier.id" 
+                                        :value="supplier">
                                     {{ supplier.business_name }}
                                 </option>
                             </select>
@@ -58,8 +61,11 @@
                         <div class="form-group">
                             <label for="product">Producto</label>
                             <select id="product" v-model="newDetail.product_id" required class="form-control">
-                                <option v-for="product in uniqueProducts" :key="product.id" :value="product.id">
-                                    {{ product.name }}
+                                <option value="" disabled selected>Seleccione un producto</option>
+                                <option v-for="product in uniqueProducts" 
+                                        :key="product.id" 
+                                        :value="product.id">
+                                    {{ product.name }} - {{ product.description }}
                                 </option>
                             </select>
                         </div>
@@ -76,6 +82,34 @@
                                 class="form-control">
                         </div>
                         <button type="button" @click="addDetailBuy" class="btn btn-outline-primary" style="margin: 1rem;">Agregar Detalle</button>
+                    </div>
+                    <div class="table-responsive mt-3" v-if="currentBuy.buy_details.length > 0">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Subtotal</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(detail, index) in currentBuy.buy_details" :key="index">
+                                    <td>{{ getProductName(detail.product_id) }}</td>
+                                    <td>{{ detail.quantity }}</td>
+                                    <td>${{ detail.buy_price }}</td>
+                                    <td>${{ (detail.quantity * detail.buy_price).toFixed(2) }}</td>
+                                    <td>
+                                        <button type="button" 
+                                                class="btn btn-danger btn-sm"
+                                                @click="removeDetail(index)">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="form-group button-group">
                         <button type="button" @click="closeModal" class="btn btn-secondary btn-lg">Cancelar</button>
@@ -96,7 +130,7 @@
                     <th>Proveedor</th>
                     <th>Monto Total</th>
                     <th>Departamento</th>
-                    <th>Descripción</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -149,11 +183,10 @@ export default {
             baseURL: 'https://backend-hospital-mediplus.onrender.com/api/buy',
             currentPage: 1,
             itemsPerPage: 7,
-            uniqueProducts: [
-                { id: 1, name: 'Producto A' },
-                { id: 2, name: 'Producto B' },
-                { id: 3, name: 'Producto C' }
-            ]
+            uniqueProducts: [],
+            uniqueSuppliers: [],
+            productsURL: 'https://backend-hospital-mediplus.onrender.com/api/product',
+            suppliersURL: 'https://backend-hospital-mediplus.onrender.com/api/supplier',
         };
     },
     computed: {
@@ -171,15 +204,16 @@ export default {
         totalPages() {
             return Math.ceil(this.filteredBuys.length / this.itemsPerPage);
         },
-        uniqueSuppliers() {
-            return [...new Map(this.buys.map(buy => [buy.supplier.id, buy.supplier])).values()];
-        },
         uniqueDepartments() {
             return [...new Map(this.buys.map(buy => [buy.departament.id, buy.departament])).values()];
         }
     },
     async created() {
-        await this.loadBuys();
+        await Promise.all([
+            this.loadBuys(),
+            this.loadProducts(),
+            this.loadSuppliers()
+        ]);
     },
     methods: {
         async loadBuys() {
@@ -194,6 +228,32 @@ export default {
                 });
             }
         },
+        async loadProducts() {
+            try {
+                const response = await axios.get(this.productsURL);
+                this.uniqueProducts = response.data.data.products;
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al cargar los productos'
+                });
+            }
+        },
+        async loadSuppliers() {
+            try {
+                const response = await axios.get(this.suppliersURL);
+                this.uniqueSuppliers = response.data.data.suppliers;
+            } catch (error) {
+                console.error('Error al cargar proveedores:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al cargar los proveedores'
+                });
+            }
+        },
         openModal() {
             this.isEditing = false;
             this.currentBuy = {
@@ -203,7 +263,8 @@ export default {
                 supplier: '',
                 amount: 0,
                 department: null,
-                buy_details: []
+                buy_details: [],
+                status: 'pendiente'
             };
             this.showModal = true;
         },
@@ -230,52 +291,57 @@ export default {
         },
         async saveBuy() {
             try {
+                if (!this.currentBuy.supplier || !this.currentBuy.department) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos requeridos',
+                        text: 'Por favor seleccione proveedor y departamento'
+                    });
+                    return;
+                }
+
+                if (this.currentBuy.buy_details.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Sin detalles',
+                        text: 'Debe agregar al menos un producto a la compra'
+                    });
+                    return;
+                }
+
                 const buyData = {
                     invoice_number: this.currentBuy.invoiceNumber,
                     date: this.currentBuy.date,
                     supplier_id: this.currentBuy.supplier.id,
                     department_id: this.currentBuy.department.id,
-                    status: 'pendiente',
+                    status: this.currentBuy.status,
                     buy_details: this.currentBuy.buy_details
                 };
 
-                const existingBuy = this.buys.find(b =>
-                    b.invoice_number === buyData.invoice_number &&
-                    (!this.isEditing || b.id !== this.currentBuy.id)
-                );
-
-                if (existingBuy) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Advertencia',
-                        text: 'Ya existe una compra con este número de factura'
-                    });
-                    return;
-                }
-
                 if (this.isEditing) {
                     await axios.put(`${this.baseURL}/${this.currentBuy.id}`, buyData);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Compra actualizada con éxito'
-                    });
                 } else {
                     await axios.post(this.baseURL, buyData);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: 'Compra creada con éxito'
-                    });
                 }
 
                 await this.loadBuys();
                 this.closeModal();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: `Compra ${this.isEditing ? 'actualizada' : 'creada'} correctamente`,
+                    timer: 1500
+                });
+
             } catch (error) {
+                console.error('Error al guardar:', error);
+                console.error('Respuesta del servidor:', error.response?.data);
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: error.response?.data?.message || 'Error al guardar la compra'
+                    text: error.response?.data?.message || `Error al ${this.isEditing ? 'actualizar' : 'crear'} la compra`
                 });
             }
         },
@@ -331,6 +397,7 @@ export default {
         addDetailBuy() {
             if (this.newDetail.product_id && this.newDetail.quantity > 0 && this.newDetail.buy_price > 0) {
                 this.currentBuy.buy_details.push({ ...this.newDetail });
+                this.updateTotalAmount();
                 this.newDetail = { product_id: null, quantity: 0, buy_price: 0 };
             } else {
                 Swal.fire({
@@ -339,6 +406,11 @@ export default {
                     text: 'Por favor, complete todos los campos del detalle de compra'
                 });
             }
+        },
+        updateTotalAmount() {
+            this.currentBuy.amount = this.currentBuy.buy_details.reduce((total, detail) => {
+                return total + (parseFloat(detail.buy_price) * detail.quantity);
+            }, 0).toFixed(2);
         },
         statusClass(status) {
             switch (status) {
@@ -351,6 +423,14 @@ export default {
                 default:
                     return '';
             }
+        },
+        getProductName(productId) {
+            const product = this.uniqueProducts.find(p => p.id === productId);
+            return product ? product.name : 'Producto no encontrado';
+        },
+        removeDetail(index) {
+            this.currentBuy.buy_details.splice(index, 1);
+            this.updateTotalAmount();
         }
     },
 };
